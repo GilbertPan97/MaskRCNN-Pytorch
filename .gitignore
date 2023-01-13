@@ -8,7 +8,7 @@ coco_dataset/
 *.zip
 
 # src run file
-src/.idea
+.idea
 
 # export model files
 models
