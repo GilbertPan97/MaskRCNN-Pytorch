@@ -1,0 +1,20 @@
+# log
+log/
+
+# coco dataset
+coco_dataset/
+
+# src run file
+src/.idea
+
+# export model files
+models
+
+# model and coco wight file
+src/model
+
+# predict image file
+inference_results
+
+# catch file
+__pycache__

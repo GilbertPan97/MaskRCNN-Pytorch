@@ -1,0 +1,9 @@
+lxml
+matplotlib
+numpy
+tqdm
+natsort
+pycocotools
+Pillow
+torch==1.12
+torchvision==0.12
