@@ -4,6 +4,9 @@ log/
 # coco dataset
 coco_dataset/
 
+# all zip file
+*.zip
+
 # src run file
 src/.idea
 
