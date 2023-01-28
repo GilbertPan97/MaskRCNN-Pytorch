@@ -97,6 +97,7 @@ class ResNet(nn.Module):
 
         return nn.Sequential(*layers)
 
+    # @torch.jit.script_method
     def forward(self, x):
         x = self.conv1(x)
         x = self.bn1(x)

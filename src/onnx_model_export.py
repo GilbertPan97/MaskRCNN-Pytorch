@@ -102,6 +102,21 @@ def verify_onnx_model(onnx_model_name, img_file):
     #     cv2.imshow("MaskRCNN Detection Demo", ort_output)
 
 
+def fix_onnx_model(onnx_save_path, export_dir):
+    import onnx
+    import onnx_graphsurgeon as gs
+
+    gs_graph = gs.import_onnx(onnx.load(onnx_save_path))
+    for i, node in enumerate(gs_graph.nodes):
+        if "Reduce" in gs_graph.nodes[i].op and 'axes' not in node.attrs:
+            # reduce all axes except batch axis
+            gs_graph.nodes[i].attrs['axes'] = [i for i in range(1, len(gs_graph.nodes[i].inputs[0].shape))]
+
+    new_onnx_graph = gs.export_onnx(gs_graph)
+    patched_onnx_model_path = os.path.join(export_dir, 'patched.onnx')
+    onnx.save(new_onnx_graph, patched_onnx_model_path)
+
+
 ############################################################
 # main function
 ############################################################
@@ -141,6 +156,8 @@ def main():
 
     # check export onnx model
     verify_onnx_model(onnx_sim_model_path, IMG_PATH)    # verify onnx model
+
+    fix_onnx_model(onnx_sim_model_path, ONNX_MODEL_DIR)
 
 
 if __name__ == "__main__":
