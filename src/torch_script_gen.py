@@ -45,8 +45,10 @@ def generate_torch_script(pytorch_model, device, img_file, save_path):
 
     # export the model
     pytorch_model.eval()
-    traced_script_module = torch.jit.script(pytorch_model, img)
-    # traced_script_module = torch.jit.trace(pytorch_model, img)
+    if device.type == 'cpu':
+        pytorch_model = pytorch_model.cpu()
+    # traced_script_module = torch.jit.script(pytorch_model, img)
+    traced_script_module = torch.jit.trace(pytorch_model, img)
     traced_script_module.save(save_path)
 
 
@@ -85,13 +87,12 @@ def main():
     generate_torch_script(model, device, IMG_PATH, model_save_path)     # export onnx model
     model_script = torch.jit.load(model_save_path)
     model_script.eval()
-    predictions = model_script(img.to(device))[0]
-
-    predict_boxes = predictions["boxes"].to("cpu").numpy()
-    predict_classes = predictions["labels"].to("cpu").numpy()
-    predict_scores = predictions["scores"].to("cpu").numpy()
-    predict_mask = predictions["masks"].to("cpu").numpy()
-
+    # predictions = model_script(img.to(device))[0]
+    #
+    # predict_boxes = predictions["boxes"].to("cpu").numpy()
+    # predict_classes = predictions["labels"].to("cpu").numpy()
+    # predict_scores = predictions["scores"].to("cpu").numpy()
+    # predict_mask = predictions["masks"].to("cpu").numpy()
 
 
 if __name__ == "__main__":

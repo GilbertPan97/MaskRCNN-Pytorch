@@ -54,8 +54,8 @@ def export_model_from_pytorch_to_onnx(pytorch_model, device, img_file, onnx_mode
 
     # export the model
     dy_axes = {'input': {0: 'batch', 2: 'height', 3: 'width'}}
-    input_label = ['in_img']
-    output_label = ['out_box', 'out_accept', 'out_score', 'out_mask']
+    input_label = ['in_imgs']
+    output_label = ['out_boxs', 'out_labels', 'out_scores', 'out_masks']
     torch.onnx.export(pytorch_model,                # model being run
                       img,                          # model input (or a tuple for multiple inputs)
                       onnx_model_name,              # where to save the model (can be a file or file-like object)
@@ -89,9 +89,9 @@ def verify_onnx_model(onnx_model_name, img_file):
     input_img = torch.unsqueeze(img, dim=0).numpy()         # input_img: onnx model input image data
     ort_inputs = {'in_img': input_img}                       # define input dictionary
     try:
-        ort_box = ort_session.run(['out_box'], ort_inputs)[0]     # onnx model inference
-        ort_score = ort_session.run(['out_accept'], ort_inputs)[0]
-        ort_mask = ort_session.run(['out_mask'], ort_inputs)[0]
+        ort_box = ort_session.run(['out_boxs'], ort_inputs)[0]     # onnx model inference
+        ort_score = ort_session.run(['out_labels'], ort_inputs)[0]
+        ort_mask = ort_session.run(['out_masks'], ort_inputs)[0]
         print("Onnx model inference result:\n{}".format(ort_mask))
     except:
         print("Onnx model inference fail.")
