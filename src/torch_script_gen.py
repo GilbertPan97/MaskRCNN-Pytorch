@@ -47,8 +47,8 @@ def generate_torch_script(pytorch_model, device, img_file, save_path):
     pytorch_model.eval()
     if device.type == 'cpu':
         pytorch_model = pytorch_model.cpu()
-    # traced_script_module = torch.jit.script(pytorch_model, img)
-    traced_script_module = torch.jit.trace(pytorch_model, img)
+    traced_script_module = torch.jit.script(pytorch_model, img)
+    # traced_script_module = torch.jit.trace(pytorch_model, img)
     traced_script_module.save(save_path)
 
 
@@ -80,19 +80,21 @@ def main():
     # from pil image to tensor, do not normalize image
     data_transform = transforms.Compose([transforms.ToTensor()])
     img = data_transform(original_img)
-    img = torch.unsqueeze(img, dim=0)  # expand batch dimension
 
     # export onnx model
     model_save_path = os.path.join(MODELS_DIR, "traced_model.pt")
     generate_torch_script(model, device, IMG_PATH, model_save_path)     # export onnx model
     model_script = torch.jit.load(model_save_path)
     model_script.eval()
-    # predictions = model_script(img.to(device))[0]
-    #
-    # predict_boxes = predictions["boxes"].to("cpu").numpy()
-    # predict_classes = predictions["labels"].to("cpu").numpy()
-    # predict_scores = predictions["scores"].to("cpu").numpy()
-    # predict_mask = predictions["masks"].to("cpu").numpy()
+    with torch.no_grad():
+        img_tensor_list = list()
+        img_tensor_list.append(img)
+        predictions = model_script([img.to(device)])[1][0]
+
+        predict_boxes = predictions["boxes"].to("cpu").numpy()
+        predict_classes = predictions["labels"].to("cpu").numpy()
+        predict_scores = predictions["scores"].to("cpu").numpy()
+        predict_mask = predictions["masks"].to("cpu").numpy()
 
 
 if __name__ == "__main__":

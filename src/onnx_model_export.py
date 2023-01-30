@@ -1,12 +1,16 @@
 import os
 import torch
 import onnx
+import json
+import numpy as np
 import onnxruntime
 from onnxsim import simplify
 from PIL import Image
 from torchvision import transforms
 from backbone import resnet50_fpn_backbone
 from network_files import MaskRCNN
+
+from src.utils.draw_box_utils import draw_objs
 
 
 # project root dir and src root dir
@@ -55,7 +59,7 @@ def export_model_from_pytorch_to_onnx(pytorch_model, device, img_file, onnx_mode
     # export the model
     dy_axes = {'input': {0: 'batch', 2: 'height', 3: 'width'}}
     input_label = ['in_imgs']
-    output_label = ['out_boxs', 'out_labels', 'out_scores', 'out_masks']
+    output_label = ['out_boxes', 'out_classes', 'out_scores', 'out_masks']
     torch.onnx.export(pytorch_model,                # model being run
                       img,                          # model input (or a tuple for multiple inputs)
                       onnx_model_name,              # where to save the model (can be a file or file-like object)
@@ -67,10 +71,9 @@ def export_model_from_pytorch_to_onnx(pytorch_model, device, img_file, onnx_mode
                       dynamic_axes=None)              # variable length axes
 
 
-def verify_onnx_model(onnx_model_name, img_file):
+def verify_onnx_model(onnx_model_name, img_file, label_json_path):
     # model is an in-memory ModelProto
     model = onnx.load(onnx_model_name)
-    # print("the model is:\n{}".format(model))
 
     # check the model
     try:
@@ -81,40 +84,48 @@ def verify_onnx_model(onnx_model_name, img_file):
     else:
         print("  the model is valid")
 
+    # read class_indict
+    assert os.path.exists(label_json_path), "json file {} dose not exist.".format(label_json_path)
+    with open(label_json_path, 'r') as json_file:
+        category_index = json.load(json_file)
+
     # verify onnx model inference
     ort_session = onnxruntime.InferenceSession(onnx_model_name)
     original_img = Image.open(img_file).convert('RGB')
     data_transform = transforms.Compose([transforms.ToTensor()])
     img = data_transform(original_img)
     input_img = torch.unsqueeze(img, dim=0).numpy()         # input_img: onnx model input image data
-    ort_inputs = {'in_img': input_img}                       # define input dictionary
+    ort_inputs = {'in_imgs': input_img}                       # define input dictionary
     try:
-        ort_box = ort_session.run(['out_boxs'], ort_inputs)[0]     # onnx model inference
-        ort_score = ort_session.run(['out_labels'], ort_inputs)[0]
-        ort_mask = ort_session.run(['out_masks'], ort_inputs)[0]
-        print("Onnx model inference result:\n{}".format(ort_mask))
+        ort_boxes = ort_session.run(['out_boxes'], ort_inputs)[0]     # onnx model inference
+        ort_classes = ort_session.run(['out_classes'], ort_inputs)[0]
+        ort_scores = ort_session.run(['out_scores'], ort_inputs)[0]
+        ort_masks = ort_session.run(['out_masks'], ort_inputs)[0]
+
+        # squeeze: [channel, batch_size, height, width] -> [channel, height, width]
+        ort_masks = np.squeeze(ort_masks, axis=1)
+
+        plot_img = draw_objs(
+            original_img, boxes=ort_boxes, classes=ort_classes,
+            scores=ort_scores, masks=ort_masks, category_index=category_index,
+            line_thickness=2, font='arial.ttf', font_size=100)
+        plot_img.show("Inference results.")
     except:
         print("Onnx model inference fail.")
-    # else:
-    #     ort_output = np.squeeze(ort_output, 0)
-    #     ort_output = np.clip(ort_output, 0, 255)
-    #     ort_output = np.transpose(ort_output, [1, 2, 0]).astype(np.uint8)
-    #     cv2.imshow("MaskRCNN Detection Demo", ort_output)
 
 
-def fix_onnx_model(onnx_save_path, export_dir):
+def fix_onnx_model(onnx_model_path, export_path):
     import onnx
     import onnx_graphsurgeon as gs
 
-    gs_graph = gs.import_onnx(onnx.load(onnx_save_path))
+    gs_graph = gs.import_onnx(onnx.load(onnx_model_path))
     for i, node in enumerate(gs_graph.nodes):
         if "Reduce" in gs_graph.nodes[i].op and 'axes' not in node.attrs:
             # reduce all axes except batch axis
             gs_graph.nodes[i].attrs['axes'] = [i for i in range(1, len(gs_graph.nodes[i].inputs[0].shape))]
 
     new_onnx_graph = gs.export_onnx(gs_graph)
-    patched_onnx_model_path = os.path.join(export_dir, 'patched.onnx')
-    onnx.save(new_onnx_graph, patched_onnx_model_path)
+    onnx.save(new_onnx_graph, export_path)
 
 
 ############################################################
@@ -154,10 +165,13 @@ def main():
     onnx.save(onnx_sim_model, onnx_sim_model_path)
     print('ONNX file simplified!')
 
-    # check export onnx model
-    verify_onnx_model(onnx_sim_model_path, IMG_PATH)    # verify onnx model
+    # fix onnx model nodes
+    fixed_model_path = os.path.join(ONNX_MODEL_DIR, "patched.onnx")
+    fix_onnx_model(onnx_sim_model_path, fixed_model_path)
 
-    fix_onnx_model(onnx_sim_model_path, ONNX_MODEL_DIR)
+    # check export onnx model
+    label_json_path = './record/coco_class_idx.json'
+    verify_onnx_model(fixed_model_path, IMG_PATH, label_json_path)    # verify onnx model
 
 
 if __name__ == "__main__":
