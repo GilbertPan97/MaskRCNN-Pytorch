@@ -87,8 +87,6 @@ def main():
     model_script = torch.jit.load(model_save_path)
     model_script.eval()
     with torch.no_grad():
-        img_tensor_list = list()
-        img_tensor_list.append(img)
         predictions = model_script([img.to(device)])[1][0]
 
         predict_boxes = predictions["boxes"].to("cpu").numpy()
