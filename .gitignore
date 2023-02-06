@@ -8,16 +8,16 @@ coco_dataset/
 *.zip
 
 # src run file
-.idea
+.idea/
 
 # export model files
 models
 
 # model and coco wight file
-src/model
+coco
 
 # predict image file
 inference_results
 
 # catch file
-__pycache__
+__pycache__/
