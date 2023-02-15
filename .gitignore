@@ -21,3 +21,6 @@ inference_results
 
 # catch file
 __pycache__/
+
+# Mac os store
+.DS_Store
