@@ -63,15 +63,10 @@ using namespace cv::dnn;
 #endif
 
 int main(){
-#ifdef WIN32
 	char* model_path = "../../../models/sack/patched.onnx";
 	String img_dir = "../../../images/sack/";
-#else
-	char* model_path = "/home/fanuc/fanuc/deploy_ws/onnx-deploy/demo/model/box/patched.onnx";
-	string img_dir = "/home/fanuc/fanuc/deploy_ws/onnx-deploy/demo/imgs/box/";
-#endif
 
-	// string save_dir = img_dir + "../../inference_results/sack";
+	string save_dir = "../../../inference_results/sack";
 	vector<string> vec_img_paths, vec_img_names;
 	readFileNameInDir(img_dir, vec_img_paths, vec_img_names);
 
@@ -89,9 +84,9 @@ int main(){
 
 		cv::Mat result_img = onnx_ip.ShowPredictMask(img, score_thresh);
 
-		// cv::String save_path = save_dir + "/" + vec_img_names[i];
-		// imwrite(save_path, result_img);
-		cv::imshow("inference result", result_img);
+		cv::String save_path = save_dir + "/" + vec_img_names[i];
+		imwrite(save_path, result_img);
+		// cv::imshow("inference result", result_img);
 		waitKey(0);
 	}
 	return 0;
