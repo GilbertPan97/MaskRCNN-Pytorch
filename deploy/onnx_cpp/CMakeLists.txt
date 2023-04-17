@@ -10,7 +10,7 @@ endif()
 # option(WITH_OPENCV "Run onnx model with opencv" OFF)
 option(WITH_GPU "Inference with cuda" OFF)
 option(WITH_ORT "Run onnx model inference with ONNXRuntime" ON)
-add_definitions( -DWITH_GPU=${WITH_GPU})
+add_definitions(-DWITH_GPU=${WITH_GPU})
 
 # Third party dir
 set(THIRD_PARTY "./third_party")
