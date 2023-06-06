@@ -1,9 +1,15 @@
 cmake_minimum_required(VERSION 3.0)
 project(OnnxDeploy CXX C)
 
+set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "add a postfix, usually d on windows")
+set(CMAKE_RELEASE_POSTFIX "" CACHE STRING "add a postfix, usually empty on windows")
+set(CMAKE_RELWITHDEBINFO_POSTFIX "rd" CACHE STRING "add a postfix, usually empty on windows")
+set(CMAKE_MINSIZEREL_POSTFIX "s" CACHE STRING "add a postfix, usually empty on windows")
+
 # option(WITH_OPENCV "Run onnx model with opencv" OFF)
 option(WITH_GPU "Inference with cuda" OFF)
 option(WITH_ORT "Run onnx model inference with ONNXRuntime" ON)
+option(BUILD_EXAMPLE "Build example" ON)
 if(WITH_GPU)
     add_definitions(-DWITH_GPU=1)
 else()

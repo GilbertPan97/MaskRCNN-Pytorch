@@ -1,13 +1,13 @@
 
-set(SRC_FILES
-    demo_main.cpp)
+set(SRC_FILES demo_main.cpp)
 
 # generate project target
 add_executable(demo_ip ${SRC_FILES})
 
 target_link_libraries(demo_ip PUBLIC ${ORT_LIBS} ${OpenCV_LIBS})
 
-target_link_libraries(demo_ip PRIVATE ${SUBSYS_NAME})
+target_link_libraries(demo_ip PRIVATE ${LIBS_NAME})
+# target_link_libraries(demo_ip PRIVATE ${CMAKE_SOURCE_DIR}/version_1.0/Debug/ModelPredict.dll)
 
 target_include_directories(demo_ip PUBLIC ${ORT_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 

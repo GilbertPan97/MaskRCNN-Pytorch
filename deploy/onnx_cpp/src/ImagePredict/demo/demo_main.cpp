@@ -1,4 +1,4 @@
-#include "../ImagePredict.h"
+#include "ModelPredict.h"
 
 #include <iostream>
 #include <fstream>
@@ -63,7 +63,8 @@ using namespace cv::dnn;
 	}
 #endif
 
-int main(){
+int main(int argc, char* argv[])
+{
 	char* model_path = "../../models/sack/patched.onnx";
 	String img_dir = "../../images/sack/";
 
@@ -71,8 +72,8 @@ int main(){
 	vector<string> vec_img_paths, vec_img_names;
 	readFileNameInDir(img_dir, vec_img_paths, vec_img_names);
 
-	// construct ImagePredict object and load model
-	ImagePredict onnx_ip(false);
+	// construct ModelPredict object and load model
+	ModelPredict onnx_ip(false);
 	onnx_ip.LoadModel(model_path);
 
 	cout << "INFO: All inference images: " << vec_img_paths.size() << endl;
