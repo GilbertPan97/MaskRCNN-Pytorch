@@ -1,6 +1,9 @@
 #include "ImagePredict.h"
 
 #include <fstream>
+#ifdef WIN32
+#include <windows.h>
+#endif
 
 #include <onnxruntime_cxx_api.h>
 
@@ -23,7 +26,7 @@ ImagePredict::ImagePredict(bool gpu){
     session_ops_.SetGraphOptimizationLevel(
 		GraphOptimizationLevel::ORT_ENABLE_ALL);	// Enable all possible optimizations
 
-#if WITH_GPU == 1
+#if WITH_GPU == true
 	if (gpu)
 		OrtSessionOptionsAppendExecutionProvider_CUDA(session_ops_, 0);
 #endif
@@ -46,13 +49,14 @@ ImagePredict::~ImagePredict(){
 bool ImagePredict::LoadModel(char* model_path){
     // creat session to load  model.
 	cout << "INFO: Start loading model." << endl;
+	
 #ifdef WIN32
 	int bufSize = MultiByteToWideChar(CP_ACP, 0, model_path, -1, NULL, 0);
 	wchar_t* w_model_path = new wchar_t[bufSize];
 	MultiByteToWideChar(CP_ACP, 0, model_path, -1, w_model_path, bufSize);
 	session_ = new Ort::Session(env_, w_model_path, session_ops_);
 #else
-	session_ = new Ort::Session(env_, model_path, session_options);
+	session_ = new Ort::Session(env_, model_path, session_ops_);
 #endif
 
 	// print model input layer (node names, types, shape etc.)

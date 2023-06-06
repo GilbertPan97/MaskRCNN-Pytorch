@@ -1,14 +1,6 @@
-#define IMAGEPREDICT_EXPORTS
-#ifdef IMAGEPREDICT_EXPORTS
-#define IMAGEPREDICT_API __declspec(dllexport)
-#else
-#define IMAGEPREDICTL_API __declspec(dllimport)
-#endif
+#ifndef IMAGEPREDICT_H
+#define IMAGEPREDICT_H
 
-#define _CRT_SECURE_NO_WARNINGS 
-#pragma once
-
-#include <windows.h>
 #include <stdio.h>
 
 #include <string>
@@ -18,7 +10,9 @@
 #include <opencv2/opencv.hpp>
 #include <onnxruntime_cxx_api.h>
 
-class IMAGEPREDICT_API ImagePredict {
+#define _CRT_SECURE_NO_WARNINGS 
+
+class ImagePredict {
 private:
 	// Ort handle
 	Ort::Env env_;
@@ -43,12 +37,19 @@ private:
 
 public:
 	ImagePredict(bool with_gpu = false);
+
 	~ImagePredict();
+
 	bool LoadModel(char* model_path);
+
 	bool PredictAction(cv::Mat& inputImg, float score_thresh = 0.7);
+
 	cv::Mat ShowPredictMask(cv::Mat& inputImg, float scoreThreshold = 0.7);
+
 	std::vector<cv::Mat> GetPredictMask();
+
 	std::vector<int> GetPredictLabel();
+
 	std::vector<float> GetPredictScore();
 
 private:
@@ -63,3 +64,5 @@ private:
                              std::string data_format);
 
 };
+
+#endif // IMAGEPREDICT_H
