@@ -1,0 +1,10 @@
+# CMake generation dependency list for this directory.
+C:/Program Files/CMake/share/cmake-3.24/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/CMake/share/cmake-3.24/Modules/FindPackageMessage.cmake
+C:/Users/GilbertPan/Documents/Github_WS/MaskRCNN-Pytorch/deploy/onnx_cpp/src/ModelPredict/CMakeLists.txt
+C:/Users/GilbertPan/Documents/Github_WS/MaskRCNN-Pytorch/deploy/onnx_cpp/third_party/opencv-win-4.5.4/OpenCVConfig-version.cmake
+C:/Users/GilbertPan/Documents/Github_WS/MaskRCNN-Pytorch/deploy/onnx_cpp/third_party/opencv-win-4.5.4/OpenCVConfig.cmake
+C:/Users/GilbertPan/Documents/Github_WS/MaskRCNN-Pytorch/deploy/onnx_cpp/third_party/opencv-win-4.5.4/x64/vc16/lib/OpenCVConfig.cmake
+C:/Users/GilbertPan/Documents/Github_WS/MaskRCNN-Pytorch/deploy/onnx_cpp/third_party/opencv-win-4.5.4/x64/vc16/lib/OpenCVModules-debug.cmake
+C:/Users/GilbertPan/Documents/Github_WS/MaskRCNN-Pytorch/deploy/onnx_cpp/third_party/opencv-win-4.5.4/x64/vc16/lib/OpenCVModules-release.cmake
+C:/Users/GilbertPan/Documents/Github_WS/MaskRCNN-Pytorch/deploy/onnx_cpp/third_party/opencv-win-4.5.4/x64/vc16/lib/OpenCVModules.cmake

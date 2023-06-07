@@ -8,9 +8,10 @@ set(CMAKE_MINSIZEREL_POSTFIX "s" CACHE STRING "add a postfix, usually empty on w
 
 # option(WITH_OPENCV "Run onnx model with opencv" OFF)
 option(WITH_GPU "Inference with cuda" OFF)
-option(WITH_ORT "Run onnx model inference with ONNXRuntime" ON)
+option(BUILD_SHARED "Build librarys with dll output" ON)
 option(BUILD_EXAMPLE "Build example" ON)
 if(WITH_GPU)
+    set(ORT_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/onnxruntime-win-x64-1.12.1")
     add_definitions(-DWITH_GPU=1)
 else()
     set(ORT_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/onnxruntime-win-x64-1.12.1")

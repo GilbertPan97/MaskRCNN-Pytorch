@@ -173,11 +173,11 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\GilbertPan\Documents\Github_WS\MaskRCNN-Pytorch\build\src\ImagePredict\ModelPredict.vcxproj">
+    <ProjectReference Include="C:\Users\GilbertPan\Documents\Github_WS\MaskRCNN-Pytorch\build\src\ModelPredict\ModelPredict.vcxproj">
       <Project>{8372D686-C7C3-3C27-8910-A3B3582B4249}</Project>
       <Name>ModelPredict</Name>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\GilbertPan\Documents\Github_WS\MaskRCNN-Pytorch\build\src\ImagePredict\demo\demo_ip.vcxproj">
+    <ProjectReference Include="C:\Users\GilbertPan\Documents\Github_WS\MaskRCNN-Pytorch\build\src\ModelPredict\demo\demo_ip.vcxproj">
       <Project>{D55D95D8-7CF7-355C-8753-DFDF64F848C2}</Project>
       <Name>demo_ip</Name>
     </ProjectReference>

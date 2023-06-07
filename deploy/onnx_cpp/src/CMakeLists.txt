@@ -1,2 +1,2 @@
 # Each subdirectory is a library. Process them.
-add_subdirectory(ImagePredict)
+add_subdirectory(ModelPredict)

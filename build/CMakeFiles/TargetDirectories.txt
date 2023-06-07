@@ -1,4 +1,4 @@
 C:/Users/GilbertPan/Documents/Github_WS/MaskRCNN-Pytorch/build/CMakeFiles/ALL_BUILD.dir
 C:/Users/GilbertPan/Documents/Github_WS/MaskRCNN-Pytorch/build/CMakeFiles/ZERO_CHECK.dir
-C:/Users/GilbertPan/Documents/Github_WS/MaskRCNN-Pytorch/build/src/ImagePredict/CMakeFiles/ModelPredict.dir
-C:/Users/GilbertPan/Documents/Github_WS/MaskRCNN-Pytorch/build/src/ImagePredict/demo/CMakeFiles/demo_ip.dir
+C:/Users/GilbertPan/Documents/Github_WS/MaskRCNN-Pytorch/build/src/ModelPredict/CMakeFiles/ModelPredict.dir
+C:/Users/GilbertPan/Documents/Github_WS/MaskRCNN-Pytorch/build/src/ModelPredict/demo/CMakeFiles/demo_ip.dir
