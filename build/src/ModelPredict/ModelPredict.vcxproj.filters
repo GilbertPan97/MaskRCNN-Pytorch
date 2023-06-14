@@ -1,27 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\Users\GilbertPan\Documents\Github_WS\MaskRCNN-Pytorch\deploy\onnx_cpp\src\ModelPredict\ModelPredict.cpp">
+    <ClCompile Include="C:\Users\GilbertPan\Desktop\Git-tmp\MaskRCNN-Pytorch\deploy\onnx_cpp\src\ModelPredict\ModelPredict.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Users\GilbertPan\Documents\Github_WS\MaskRCNN-Pytorch\deploy\onnx_cpp\src\ModelPredict\ModelPredict.h">
+    <ClInclude Include="C:\Users\GilbertPan\Desktop\Git-tmp\MaskRCNN-Pytorch\deploy\onnx_cpp\src\ModelPredict\ModelPredict.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\GilbertPan\Documents\Github_WS\MaskRCNN-Pytorch\deploy\onnx_cpp\src\ModelPredict\ModelPredictGlobal.h">
+    <ClInclude Include="C:\Users\GilbertPan\Desktop\Git-tmp\MaskRCNN-Pytorch\deploy\onnx_cpp\src\ModelPredict\ModelPredictGlobal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\Users\GilbertPan\Documents\Github_WS\MaskRCNN-Pytorch\deploy\onnx_cpp\src\ModelPredict\CMakeLists.txt" />
+    <CustomBuild Include="C:\Users\GilbertPan\Desktop\Git-tmp\MaskRCNN-Pytorch\deploy\onnx_cpp\src\ModelPredict\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{03A14546-0B1D-360B-BA5E-A10B164250ED}</UniqueIdentifier>
+      <UniqueIdentifier>{1D51325E-4539-3720-814D-0C40FB88B114}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{121E3BB8-8F61-3581-91D8-C9A7BD544051}</UniqueIdentifier>
+      <UniqueIdentifier>{56D499B6-B2EB-374F-B3B0-6F3F0ADCC483}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

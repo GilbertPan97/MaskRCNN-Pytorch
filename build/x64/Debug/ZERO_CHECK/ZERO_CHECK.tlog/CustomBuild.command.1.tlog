@@ -1,6 +1,6 @@
-^C:\USERS\GILBERTPAN\DOCUMENTS\GITHUB_WS\MASKRCNN-PYTORCH\BUILD\CMAKEFILES\17B50E709597D98F2385FB3D59950319\GENERATE.STAMP.RULE
+^C:\USERS\GILBERTPAN\DESKTOP\GIT-TMP\MASKRCNN-PYTORCH\BUILD\CMAKEFILES\3B8CD2E0C93D91C7A12A20589D60B5F5\GENERATE.STAMP.RULE
 setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/GilbertPan/Documents/Github_WS/MaskRCNN-Pytorch/deploy/onnx_cpp -BC:/Users/GilbertPan/Documents/Github_WS/MaskRCNN-Pytorch/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/GilbertPan/Documents/Github_WS/MaskRCNN-Pytorch/build/OnnxDeploy.sln
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/GilbertPan/Desktop/Git-tmp/MaskRCNN-Pytorch/deploy/onnx_cpp -BC:/Users/GilbertPan/Desktop/Git-tmp/MaskRCNN-Pytorch/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/GilbertPan/Desktop/Git-tmp/MaskRCNN-Pytorch/build/OnnxDeploy.sln
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone

@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/GilbertPan/Documents/Github_WS/MaskRCNN-Pytorch/deploy/onnx_cpp/src/ModelPredict/demo
+# Install script for directory: C:/Users/GilbertPan/Desktop/Git-tmp/MaskRCNN-Pytorch/deploy/onnx_cpp/src/ModelPredict/demo
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

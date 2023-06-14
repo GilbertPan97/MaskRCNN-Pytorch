@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/GilbertPan/Documents/Github_WS/MaskRCNN-Pytorch/deploy/onnx_cpp/src/ModelPredict
+# Install script for directory: C:/Users/GilbertPan/Desktop/Git-tmp/MaskRCNN-Pytorch/deploy/onnx_cpp/src/ModelPredict
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,7 +34,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("C:/Users/GilbertPan/Documents/Github_WS/MaskRCNN-Pytorch/build/src/ModelPredict/demo/cmake_install.cmake")
+  include("C:/Users/GilbertPan/Desktop/Git-tmp/MaskRCNN-Pytorch/build/src/ModelPredict/demo/cmake_install.cmake")
 
 endif()
 

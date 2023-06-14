@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 	readFileNameInDir(img_dir, vec_img_paths, vec_img_names);
 
 	// construct ModelPredict object and load model
-	ModelPredict onnx_ip(true);
+	ModelPredict onnx_ip(true, 0);
 	onnx_ip.LoadModel(model_path);
 
 	cout << "INFO: All inference images: " << vec_img_paths.size() << endl;

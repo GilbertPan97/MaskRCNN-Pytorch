@@ -10,22 +10,15 @@
 using namespace std;
 using namespace cv;
 
-ModelPredict::ModelPredict(bool gpu){
-    // load onnxruntime dll (CPU or GPU version)
-	// cout << "INFO: Start load onnxruntime.dll";
-	// this->hdll = LoadLibrary("onnxruntime.dll");
-	// if (this->hdll == NULL) {
-	// 	cout << "ERROR: Fail to load onnxruntime.dll";
-	// 	FreeLibrary(this->hdll);
-	// 	throw("Load onnxruntime.dll fail.");
-	// }
-
-    // initial ort env and session options handle
+ModelPredict::ModelPredict(bool gpu, int device_id){
+	// create onnxruntime running environment
     env_ = Ort::Env(ORT_LOGGING_LEVEL_ERROR, "OnnxModel");
-	session_ops_.SetIntraOpNumThreads(1);	// op thread
+	session_ops_.SetIntraOpNumThreads(8);	// op thread
     session_ops_.SetGraphOptimizationLevel(
 		GraphOptimizationLevel::ORT_ENABLE_ALL);	// Enable all possible optimizations
 
+	// if used GPU, shared lib onnxruntime_providers_cuda will be load
+	// it will auto inference on cpu if no gpu or cuda on the computer
 #if WITH_GPU == true
 	if (!gpu){
 		std::cout << "WARNING: GPU option is not selected, model are running at cpu.\n";
@@ -33,23 +26,16 @@ ModelPredict::ModelPredict(bool gpu){
 	else{
 		try{
 			// Model acceleration with gpu-0
-			OrtSessionOptionsAppendExecutionProvider_CUDA(session_ops_, 0);
+			Ort::ThrowOnError(OrtSessionOptionsAppendExecutionProvider_CUDA(session_ops_, device_id));
+			std::cout << "INFO: Successful load cuda at GPU: " << device_id << std::endl;
 		}
 		catch (const Ort::Exception& exception) {
-			std::cerr << "Error: " << exception.what() << std::endl;
-			throw std::runtime_error("ERROR: No cuda detected, run model on gpu fail.\n");
+			std::cerr << "WARNING: " << exception.what() << std::endl
+					  << "WARNING: Onnx Model Running on cpu instead.\n";
+			// throw std::runtime_error("ERROR: No cuda detected, run model on gpu fail.\n");
 		}
 	}	
 #endif
-
-	// cout << "INFO:  -- load InitModel";
-	// this->init_model = (InitModel)GetProcAddress(this->hdll, "InitModel");
-	// if (this->init_model == NULL) {
-	// 	cout << "INFO: Fail to load InitModel";
-	// 	FreeLibrary(this->hdll);
-	// 	throw("Initial model fail.");
-	// }
-	// cout << "INFO: Succeed initing ModelPredict";
 }
 
 ModelPredict::~ModelPredict(){
@@ -129,8 +115,15 @@ bool ModelPredict::PredictAction(cv::Mat& inputImg, float score_thresh){
 
 	// inference run
 	double timeStart = (double)getTickCount();
-	auto output_tensors = session_->Run(Ort::RunOptions{nullptr}, input_names_.data(), 
-		input_tensors.data(), input_tensors.size(), output_names_.data(), output_names_.size());
+	std::vector<Ort::Value> output_tensors;
+	try {
+		output_tensors = session_->Run(Ort::RunOptions{nullptr}, input_names_.data(), 
+			input_tensors.data(), input_tensors.size(), output_names_.data(), output_names_.size());
+	}
+	catch (const Ort::Exception& exception) {
+		std::cerr << "Error: " << exception.what() << std::endl;
+		return false;
+	}
 	double nTime = ((double)getTickCount() - timeStart) / getTickFrequency();
 	cout << "Inference time consume : " << nTime  << " s."<< endl;
 	

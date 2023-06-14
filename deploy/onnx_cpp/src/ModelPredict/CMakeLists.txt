@@ -18,11 +18,13 @@ endif ()
 
 # add ort dependence
 if(WIN32)
-  file(GLOB ORT_LIBS ${ORT_DIRS}/lib/*.lib)
+    file(GLOB ORT_LIBS ${ORT_DIR}/lib/*.lib)
+    file(GLOB ORT_DLLS ${ORT_DIR}/lib/*.dll)
 else()
-  file(GLOB ORT_LIBS ${ORT_DIRS}/lib/*.so)
+    file(GLOB ORT_LIBS ${ORT_DIR}/lib/*)
 endif()
-set(ORT_INCLUDE_DIRS "${ORT_DIRS}/include")
+
+set(ORT_INCLUDE_DIRS "${ORT_DIR}/include")
 
 # config ModelPredict lib build
 set(SRC_FILES ModelPredict.cpp)

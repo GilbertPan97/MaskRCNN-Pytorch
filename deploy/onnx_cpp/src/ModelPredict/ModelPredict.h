@@ -38,7 +38,7 @@ private:
 	std::vector<cv::Scalar> colors_list_;
 
 public:
-	ModelPredict(bool with_gpu = false);
+	ModelPredict(bool with_gpu = false, int device_id = 0);
 
 	~ModelPredict();
 
