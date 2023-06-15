@@ -25,8 +25,6 @@ private:
 	std::vector<char*> input_names_;
 	std::vector<char*> output_names_;
 
-	// HINSTANCE hdll;
-
 	// inference results
 	std::vector<std::array<float, 4>> bboxes_;
 	std::vector<int> labels_;
@@ -38,7 +36,7 @@ private:
 	std::vector<cv::Scalar> colors_list_;
 
 public:
-	ModelPredict(bool with_gpu = false, int device_id = 0);
+	ModelPredict(bool with_gpu = false, int device_id = 0, int thread = 1);
 
 	~ModelPredict();
 
@@ -48,6 +46,8 @@ public:
 
 	cv::Mat ShowPredictMask(cv::Mat& inputImg, float scoreThreshold = 0.7);
 
+	std::vector<std::array<float, 4>> GetBoundingBox();
+
 	std::vector<cv::Mat> GetPredictMask();
 
 	std::vector<int> GetPredictLabel();
@@ -56,15 +56,20 @@ public:
 
 private:
 	void softNMSBoxes_filter(float score_threshold = 0.5, float nms_threshold = 0.6);
+
 	void drawDashRect(cv::Mat& img, cv::Point p1, cv::Point p2, 
-				  cv::Scalar& color, int thickness = 1);
+					  cv::Scalar& color, int thickness = 1);
+
 	cv::Scalar hsv_to_rgb(std::vector<float> hsv);
+
 	std::vector<cv::Scalar> random_colors(int nbr, bool bright=true);
-	Ort::Value create_tensor(const cv::Mat &mat, const std::vector<int64_t> &tensor_dims,
+
+	Ort::Value create_tensor(const cv::Mat &mat, 
+							 const std::vector<int64_t> &tensor_dims,
                              const Ort::MemoryInfo &memory_info_handler,
                              std::vector<float> &tensor_value_handler,
                              std::string data_format);
 
 };
 
-#endif // IMAGEPREDICT_H
+#endif // MODELPREDICT_H

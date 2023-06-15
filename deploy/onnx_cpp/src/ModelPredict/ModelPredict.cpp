@@ -10,10 +10,10 @@
 using namespace std;
 using namespace cv;
 
-ModelPredict::ModelPredict(bool gpu, int device_id){
+ModelPredict::ModelPredict(bool gpu, int device_id, int threads){
 	// create onnxruntime running environment
     env_ = Ort::Env(ORT_LOGGING_LEVEL_ERROR, "OnnxModel");
-	session_ops_.SetIntraOpNumThreads(8);	// op thread
+	session_ops_.SetIntraOpNumThreads(threads);	// op thread
     session_ops_.SetGraphOptimizationLevel(
 		GraphOptimizationLevel::ORT_ENABLE_ALL);	// Enable all possible optimizations
 
@@ -280,6 +280,11 @@ void ModelPredict::softNMSBoxes_filter(float score_threshold, float nms_threshol
 	bboxes_.erase(bboxes_.begin(), bboxes_.begin()+ori_nbbox);		// erase original results
 	labels_.erase(labels_.begin(), labels_.begin()+ori_nbbox);
 	masks_.erase(masks_.begin(), masks_.begin()+ori_nbbox);
+}
+
+std::vector<std::array<float, 4>> ModelPredict::GetBoundingBox()
+{
+	return bboxes_;
 }
 
 std::vector<cv::Mat> ModelPredict::GetPredictMask()
