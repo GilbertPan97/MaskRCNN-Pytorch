@@ -1,39 +1,41 @@
-# onnxDeploy
+# OnnxDeploy
 
-#### 介绍
-{**以下是 Gitee 平台说明，您可以替换此简介**
-Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN）。专为开发者提供稳定、高效、安全的云端软件开发协作平台
-无论是个人、团队、或是企业，都能够用 Gitee 实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
+Overview: This code repository is designed for C++ deploying onnx models. The model inference is implemented based on onnxruntime. Due to the API incompatibility between different versions of onnxruntime, currently this version only supports running on onnxruntime 1.12.1.
 
-#### 软件架构
-软件架构说明
+## Requirements
 
+This repository currently requires onnxruntime 1.12.1. Therefore, in order to run the code on GPU, you need to satisfy the following dependencies:
 
-#### 安装教程
+|  ONNXRuntime  |   CUDA  |  cuDNN  |                                Notes                               |
+|:------------:|:-------:|:-------:|:------------------------------------------------------------------:|
+|     1.12     |   11.4  |   8.2.4(linux) <br> 8.2.2.26(windows)  |   Linux (libcudart 11.4.43, libcufft 10.5.2.100, libcurand 10.2.5.120, libcublasLt 11.6.5.2, libcublas 11.6.5.2, and libcudnn 8.2.4) <br>  Windows (libcudart 11.4.43, libcufft 10.5.2.100, libcurand 10.2.5.120, libcublasLt 11.6.5.2, libcublas 11.6.5.2, and libcudnn 8.2.4) |
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+Note: Among the listed dependencies, cuDNN is backward compatible. Therefore, the version of cuDNN mentioned in the requirement table represents the minimum compatible version. It is possible to use higher compatible versions of cuDNN with the code. However, for optimal performance, it is recommended to use the exact version mentioned in the table.
 
-#### 使用说明
+Currently, pre-compiled libraries of onnxruntime 1.12.1 for different platforms are available on the release page, which can be directly downloaded and placed in third-party files for use. For further information on compatibility with other versions of onnxruntime, please refer to the following link: [OnnxRuntime Compatibility](https://onnxruntime.ai/docs/execution-providers/CUDA-ExecutionProvider.html).
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+## Usuage Guide
 
-#### 参与贡献
+This section describes how to use the project, step by step.
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+1. Deploy CUDA and cuDNN environments based on requirements (only needed when GPU execution is called).
 
+2. Clone this repository and download the onnxruntime library for the corresponding platform from the release page, then place it in the third-party folder.
 
-#### 特技
+3. Launch the terminal in the root directory and run the following commands:
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+```
+sudo mkdir build && cd build
+cmake .. && make -j4
+```
+Alternatively, you can use an IDE such as VSCode or CLion instead to execute CMake build and compile.
+
+4. The compiled executable and library outputs can be found in folder `version_*`.
+
+## Contributing
+
+Contributions are welcome for this repository. Fork the repository, make your changes, and submit a pull request. Please ensure that your changes are compatible with onnxruntime version 1.12.1.
+
+## License
+
+This code is licensed under the MIT license. See the LICENSE file for details.

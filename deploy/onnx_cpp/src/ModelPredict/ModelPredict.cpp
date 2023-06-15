@@ -282,6 +282,11 @@ void ModelPredict::softNMSBoxes_filter(float score_threshold, float nms_threshol
 	masks_.erase(masks_.begin(), masks_.begin()+ori_nbbox);
 }
 
+std::vector<std::array<float, 4>> ModelPredict::GetBoundingBox()
+{
+	return bboxes_;
+}
+
 std::vector<cv::Mat> ModelPredict::GetPredictMask()
 {
 	return masks_;

@@ -45,6 +45,9 @@ deploy/onnx_cpp/version_*/
 [Bb]uild/
 deploy/others_test/
 
+# pkg catch files
+deploy/onnx_cpp/pkg_cache/
+
 # Onnx model files
 deploy/onnx_cpp/models/
 
