@@ -1,6 +1,3 @@
 {
-    "cmake.sourceDirectory": "C:/Users/GilbertPan/Desktop/Git-tmp/MaskRCNN-Pytorch/deploy/onnx_cpp",
-    "files.associations": {
-        "iostream": "cpp"
-    }
+    "cmake.sourceDirectory": "C:/Users/GilbertPan/Documents/Github_WS/MaskRCNN-Pytorch/deploy/onnx_cpp"
 }

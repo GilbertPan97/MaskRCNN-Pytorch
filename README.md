@@ -35,7 +35,7 @@ pip install -r requirements.txt
 python train.py
 ```
 
-4. Converting the trained models to ONNX format (run script `onnx_model_export.py`) and running them in onnxruntime. Details on deploying ONNX models in C++ can be found in `readme.md` of `deploy/C++deploy`
+4. Converting the trained models to ONNX format (run script `onnx_model_export.py`) and running them in onnxruntime. Details on deploying ONNX models in C++ can be found in `readme.md` of `deploy/onnx_cpp`
 
 Please note that the repository provides a basic development workflow example. You can extend and customize it to suit your requirements.
 

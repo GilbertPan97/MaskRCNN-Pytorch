@@ -43,6 +43,7 @@ deploy/onnx_cpp/[Bb]uild/
 deploy/onnx_cpp/.vscode/
 deploy/onnx_cpp/version_*/
 [Bb]uild/
+deploy/others_test/
 
 # Onnx model files
 deploy/onnx_cpp/models/

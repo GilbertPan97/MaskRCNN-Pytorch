@@ -10,10 +10,10 @@
 using namespace std;
 using namespace cv;
 
-ModelPredict::ModelPredict(bool gpu, int device_id){
+ModelPredict::ModelPredict(bool gpu, int device_id, int threads){
 	// create onnxruntime running environment
     env_ = Ort::Env(ORT_LOGGING_LEVEL_ERROR, "OnnxModel");
-	session_ops_.SetIntraOpNumThreads(8);	// op thread
+	session_ops_.SetIntraOpNumThreads(threads);	// op thread
     session_ops_.SetGraphOptimizationLevel(
 		GraphOptimizationLevel::ORT_ENABLE_ALL);	// Enable all possible optimizations
 
