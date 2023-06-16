@@ -38,4 +38,4 @@ Contributions are welcome for this repository. Fork the repository, make your ch
 
 ## License
 
-This code is licensed under the MIT license. See the LICENSE file for details.
+This code is licensed under the Apache 2.0 license. See the LICENSE file for details.
