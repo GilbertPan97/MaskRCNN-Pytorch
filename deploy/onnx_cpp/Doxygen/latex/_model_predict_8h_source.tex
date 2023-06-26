@@ -1,0 +1,84 @@
+\hypertarget{_model_predict_8h_source}{}\doxysection{Model\+Predict.\+h}
+\label{_model_predict_8h_source}\index{C:/Users/GilbertPan/Documents/Github\_WS/MaskRCNN-\/Pytorch/deploy/onnx\_cpp/src/ModelPredict/ModelPredict.h@{C:/Users/GilbertPan/Documents/Github\_WS/MaskRCNN-\/Pytorch/deploy/onnx\_cpp/src/ModelPredict/ModelPredict.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef MODELPREDICT\_H}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define MODELPREDICT\_H}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}ModelPredictGlobal.h"{}}}
+\DoxyCodeLine{5 }
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include <stdio.h>}}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include <string>}}
+\DoxyCodeLine{9 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#include <iostream>}}
+\DoxyCodeLine{11 }
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#include <opencv2/opencv.hpp>}}
+\DoxyCodeLine{13 \textcolor{preprocessor}{\#include <onnxruntime\_cxx\_api.h>}}
+\DoxyCodeLine{14 }
+\DoxyCodeLine{15 \textcolor{preprocessor}{\#define \_CRT\_SECURE\_NO\_WARNINGS }}
+\DoxyCodeLine{16 }
+\DoxyCodeLine{17 \textcolor{keyword}{class }MP\_EXPORT \mbox{\hyperlink{class_model_predict}{ModelPredict}} \{}
+\DoxyCodeLine{18 \textcolor{keyword}{private}:}
+\DoxyCodeLine{19     \textcolor{comment}{// Ort handle}}
+\DoxyCodeLine{20     Ort::Env env\_;}
+\DoxyCodeLine{21     Ort::SessionOptions session\_ops\_;}
+\DoxyCodeLine{22     Ort::Session* session\_;}
+\DoxyCodeLine{23 }
+\DoxyCodeLine{24     \textcolor{comment}{// model info}}
+\DoxyCodeLine{25     std::vector<char*> input\_names\_;}
+\DoxyCodeLine{26     std::vector<char*> output\_names\_;}
+\DoxyCodeLine{27 }
+\DoxyCodeLine{28     \textcolor{comment}{// inference results}}
+\DoxyCodeLine{29     std::vector<std::array<float, 4>> bboxes\_;}
+\DoxyCodeLine{30     std::vector<int> labels\_;}
+\DoxyCodeLine{31     std::vector<cv::String> classes\_name\_;}
+\DoxyCodeLine{32     std::vector<float> scores\_;}
+\DoxyCodeLine{33     std::vector<cv::Mat> masks\_;}
+\DoxyCodeLine{34 }
+\DoxyCodeLine{35     \textcolor{comment}{// random colors list for mask show}}
+\DoxyCodeLine{36     std::vector<cv::Scalar> colors\_list\_;}
+\DoxyCodeLine{37 }
+\DoxyCodeLine{38 \textcolor{keyword}{public}:}
+\DoxyCodeLine{39     }
+\DoxyCodeLine{45     \mbox{\hyperlink{class_model_predict}{ModelPredict}}(\textcolor{keywordtype}{bool} with\_gpu = \textcolor{keyword}{false}, \textcolor{keywordtype}{int} device\_id = 0, \textcolor{keywordtype}{int} thread = 1);}
+\DoxyCodeLine{46 }
+\DoxyCodeLine{47     \mbox{\hyperlink{class_model_predict}{\string~ModelPredict}}();}
+\DoxyCodeLine{48 }
+\DoxyCodeLine{53     \textcolor{keywordtype}{bool} LoadModel(\textcolor{keywordtype}{char}* model\_path);}
+\DoxyCodeLine{54 }
+\DoxyCodeLine{61     \textcolor{keywordtype}{bool} PredictAction(cv::Mat\& inputImg, \textcolor{keywordtype}{float} score\_thresh = 0.7);}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{69     cv::Mat ShowPredictMask(cv::Mat\& inputImg, \textcolor{keywordtype}{float} scoreThreshold = 0.7);}
+\DoxyCodeLine{70 }
+\DoxyCodeLine{75     std::vector<std::array<float, 4>> GetBoundingBox();}
+\DoxyCodeLine{76 }
+\DoxyCodeLine{81     std::vector<std::vector<cv::Point2f>> GetMinBoundingBox();}
+\DoxyCodeLine{82 }
+\DoxyCodeLine{86     std::vector<cv::Mat> GetPredictMask();}
+\DoxyCodeLine{87 }
+\DoxyCodeLine{91     std::vector<int> GetPredictLabel();}
+\DoxyCodeLine{92 }
+\DoxyCodeLine{96     std::vector<float> GetPredictScore();}
+\DoxyCodeLine{97 }
+\DoxyCodeLine{98 \textcolor{keyword}{private}:}
+\DoxyCodeLine{99     \textcolor{keywordtype}{void} softNMSBoxes\_filter(\textcolor{keywordtype}{float} score\_threshold = 0.5, \textcolor{keywordtype}{float} nms\_threshold = 0.6);}
+\DoxyCodeLine{100 }
+\DoxyCodeLine{101     \textcolor{keywordtype}{void} drawDashRect(cv::Mat\& img, cv::Point p1, cv::Point p2, }
+\DoxyCodeLine{102                       cv::Scalar\& color, \textcolor{keywordtype}{int} thickness = 1);}
+\DoxyCodeLine{103 }
+\DoxyCodeLine{104     cv::Scalar hsv\_to\_rgb(std::vector<float> hsv);}
+\DoxyCodeLine{105 }
+\DoxyCodeLine{106     std::vector<cv::Scalar> random\_colors(\textcolor{keywordtype}{int} nbr, \textcolor{keywordtype}{bool} bright=\textcolor{keyword}{true});}
+\DoxyCodeLine{107 }
+\DoxyCodeLine{108     Ort::Value create\_tensor(\textcolor{keyword}{const} cv::Mat \&mat, }
+\DoxyCodeLine{109                              \textcolor{keyword}{const} std::vector<int64\_t> \&tensor\_dims,}
+\DoxyCodeLine{110                              \textcolor{keyword}{const} Ort::MemoryInfo \&memory\_info\_handler,}
+\DoxyCodeLine{111                              std::vector<float> \&tensor\_value\_handler,}
+\DoxyCodeLine{112                              std::string data\_format);}
+\DoxyCodeLine{113 }
+\DoxyCodeLine{114 \};}
+\DoxyCodeLine{115 }
+\DoxyCodeLine{116 \textcolor{preprocessor}{\#endif }\textcolor{comment}{// MODELPREDICT\_H}}
+
+\end{DoxyCode}

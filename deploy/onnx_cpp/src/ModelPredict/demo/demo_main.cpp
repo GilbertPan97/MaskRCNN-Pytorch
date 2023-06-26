@@ -82,6 +82,9 @@ int main(int argc, char* argv[])
 
 		cv::Mat result_img = onnx_ip.ShowPredictMask(img, score_thresh);
 
+		std::vector<std::vector<cv::Point2f>> min_bboxes;
+		min_bboxes = onnx_ip.GetMinBoundingBox();
+
 		cv::String save_path = save_dir + "/" + vec_img_names[i];
 		imwrite(save_path, result_img);
 		cv::imshow("Inference result of image-[" + std::to_string(i) + "]", result_img);

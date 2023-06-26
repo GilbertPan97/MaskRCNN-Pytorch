@@ -36,22 +36,62 @@ private:
 	std::vector<cv::Scalar> colors_list_;
 
 public:
+	/** @brief Initializes the ModelPredict object.
+	 * @param with_gpu (bool): Specifies whether to use GPU acceleration (default: false).
+	 * @param device_id (int): ID of the GPU/CPU device to be used (default: 0).
+	 * @param thread (int): Number of threads to be used for prediction (default: 1).
+	 */
 	ModelPredict(bool with_gpu = false, int device_id = 0, int thread = 1);
 
 	~ModelPredict();
 
+	/** @brief Loads the model from the specified path.
+	 * @param model_path (char*): Path to the onnx model file.
+	 * @return (bool) True if the model was loaded successfully, false otherwise.
+	 */
 	bool LoadModel(char* model_path);
 
+	/** @brief Predicts the action based on the input image.
+	 * @param inputImg (cv::Mat&): Original input image for prediction.
+	 * @param score_thresh (float): Threshold score for output results (default: 0.7), 
+	 * only higher score results will be saved in the model prediction object.
+	 * @return (bool) True if the prediction was successful, false otherwise.
+	 */
 	bool PredictAction(cv::Mat& inputImg, float score_thresh = 0.7);
 
+	/** @brief Returns an image of the predicted result plotted with masks, bounding boxes and scores
+	 * @param imputImg (cv::Mat): Original input image, should be the same as PredictAction-inputImg.
+	 * @param scoreThreshold (float): Threshold score imply to display the result, 
+	 * the masks and bboxes above the score will be displayed on the image
+	 * @return (cv::Mat) An image of the predicted result with masks, bboxes and scores.
+	*/
 	cv::Mat ShowPredictMask(cv::Mat& inputImg, float scoreThreshold = 0.7);
 
+	/** @brief Returns a vector of bounding box coordinates.
+	 * @return (std::vector<std::array<float, 4>>) Vector of bounding box coordinates, 
+	 * where each element is a vector containing [x0, y0, x1, y1].
+	 */
 	std::vector<std::array<float, 4>> GetBoundingBox();
 
+	/** @brief Returns a vector of minimum bounding box coordinates.
+	 * @return (std::vector<std::vector<cv::Point2f>>) Vector of minimum bounding box coordinates, 
+	 * where each element is a vector containing [[(x0, y0), (x1, y1), (x2, y2), (x3, y3)]].
+	 */
+	std::vector<std::vector<cv::Point2f>> GetMinBoundingBox();
+
+	/** @brief Returns a vector of predicted masks.
+	 * @return (std::vector<cv::Mat>) Vector of predicted masks.
+	 */
 	std::vector<cv::Mat> GetPredictMask();
 
+	/** @brief Returns a vector of predicted labels (id) to imply the class.
+	 * @return (std::vector<int>) Vector of predicted labels (id).
+	 */
 	std::vector<int> GetPredictLabel();
 
+	/** @brief Returns a vector of predicted scores.
+	 * @return (std::vector<float>) Vector of predicted scores.
+	 */
 	std::vector<float> GetPredictScore();
 
 private:

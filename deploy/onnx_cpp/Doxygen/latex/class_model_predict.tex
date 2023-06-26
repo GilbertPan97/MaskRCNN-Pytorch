@@ -1,0 +1,177 @@
+\hypertarget{class_model_predict}{}\doxysection{Model\+Predict Class Reference}
+\label{class_model_predict}\index{ModelPredict@{ModelPredict}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_model_predict_ac24266faf0d31a4b0264f1fc06831be4}{Model\+Predict}} (bool with\+\_\+gpu=false, int device\+\_\+id=0, int thread=1)
+\begin{DoxyCompactList}\small\item\em Initializes the \mbox{\hyperlink{class_model_predict}{Model\+Predict}} object. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_model_predict_abcd6a0914547704121e9daa85f568de2}{Load\+Model}} (char $\ast$model\+\_\+path)
+\begin{DoxyCompactList}\small\item\em Loads the model from the specified path. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_model_predict_af13e1fdffa03809593961a27ba526230}{Predict\+Action}} (cv\+::\+Mat \&input\+Img, float score\+\_\+thresh=0.\+7)
+\begin{DoxyCompactList}\small\item\em Predicts the action based on the input image. \end{DoxyCompactList}\item 
+cv\+::\+Mat \mbox{\hyperlink{class_model_predict_af50700fe2ade8a3127ef9241aa91b18a}{Show\+Predict\+Mask}} (cv\+::\+Mat \&input\+Img, float score\+Threshold=0.\+7)
+\begin{DoxyCompactList}\small\item\em Returns an image of the predicted result plotted with masks, bounding boxes and scores. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::array$<$ float, 4 $>$ $>$ \mbox{\hyperlink{class_model_predict_a968af9e7ac1f667e683bdeadd236cc20}{Get\+Bounding\+Box}} ()
+\begin{DoxyCompactList}\small\item\em Returns a vector of bounding box coordinates. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::vector$<$ cv\+::\+Point2f $>$ $>$ \mbox{\hyperlink{class_model_predict_ad0a23e32b115b7e053a874e89e3f48fe}{Get\+Min\+Bounding\+Box}} ()
+\begin{DoxyCompactList}\small\item\em Returns a vector of minimum bounding box coordinates. \end{DoxyCompactList}\item 
+std\+::vector$<$ cv\+::\+Mat $>$ \mbox{\hyperlink{class_model_predict_ab10be79b1983e6ea455e4b1b99437d7d}{Get\+Predict\+Mask}} ()
+\begin{DoxyCompactList}\small\item\em Returns a vector of predicted masks. \end{DoxyCompactList}\item 
+std\+::vector$<$ int $>$ \mbox{\hyperlink{class_model_predict_af2faccd53fa53bbea5be1d2829a5eb66}{Get\+Predict\+Label}} ()
+\begin{DoxyCompactList}\small\item\em Returns a vector of predicted labels (id) to imply the class. \end{DoxyCompactList}\item 
+std\+::vector$<$ float $>$ \mbox{\hyperlink{class_model_predict_a82779c886f350153b3dedd6af11e876a}{Get\+Predict\+Score}} ()
+\begin{DoxyCompactList}\small\item\em Returns a vector of predicted scores. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_model_predict_ac24266faf0d31a4b0264f1fc06831be4}\label{class_model_predict_ac24266faf0d31a4b0264f1fc06831be4}} 
+\index{ModelPredict@{ModelPredict}!ModelPredict@{ModelPredict}}
+\index{ModelPredict@{ModelPredict}!ModelPredict@{ModelPredict}}
+\doxysubsubsection{\texorpdfstring{ModelPredict()}{ModelPredict()}}
+{\footnotesize\ttfamily Model\+Predict\+::\+Model\+Predict (\begin{DoxyParamCaption}\item[{bool}]{with\+\_\+gpu = {\ttfamily false},  }\item[{int}]{device\+\_\+id = {\ttfamily 0},  }\item[{int}]{thread = {\ttfamily 1} }\end{DoxyParamCaption})}
+
+
+
+Initializes the \mbox{\hyperlink{class_model_predict}{Model\+Predict}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em with\+\_\+gpu} & (bool)\+: Specifies whether to use GPU acceleration (default\+: false). \\
+\hline
+{\em device\+\_\+id} & (int)\+: ID of the GPU/\+CPU device to be used (default\+: 0). \\
+\hline
+{\em thread} & (int)\+: Number of threads to be used for prediction (default\+: 1). \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_model_predict_a968af9e7ac1f667e683bdeadd236cc20}\label{class_model_predict_a968af9e7ac1f667e683bdeadd236cc20}} 
+\index{ModelPredict@{ModelPredict}!GetBoundingBox@{GetBoundingBox}}
+\index{GetBoundingBox@{GetBoundingBox}!ModelPredict@{ModelPredict}}
+\doxysubsubsection{\texorpdfstring{GetBoundingBox()}{GetBoundingBox()}}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::array$<$ float, 4 $>$ $>$ Model\+Predict\+::\+Get\+Bounding\+Box (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns a vector of bounding box coordinates. 
+
+\begin{DoxyReturn}{Returns}
+(std\+::vector$<$std\+::array$<$float, 4$>$$>$) Vector of bounding box coordinates, where each element is a vector containing \mbox{[}x0, y0, x1, y1\mbox{]}. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_model_predict_ad0a23e32b115b7e053a874e89e3f48fe}\label{class_model_predict_ad0a23e32b115b7e053a874e89e3f48fe}} 
+\index{ModelPredict@{ModelPredict}!GetMinBoundingBox@{GetMinBoundingBox}}
+\index{GetMinBoundingBox@{GetMinBoundingBox}!ModelPredict@{ModelPredict}}
+\doxysubsubsection{\texorpdfstring{GetMinBoundingBox()}{GetMinBoundingBox()}}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::vector$<$ cv\+::\+Point2f $>$ $>$ Model\+Predict\+::\+Get\+Min\+Bounding\+Box (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns a vector of minimum bounding box coordinates. 
+
+\begin{DoxyReturn}{Returns}
+(std\+::vector$<$std\+::vector$<$cv\+::\+Point2f$>$$>$) Vector of minimum bounding box coordinates, where each element is a vector containing \mbox{[}\mbox{[}(x0, y0), (x1, y1), (x2, y2), (x3, y3)\mbox{]}\mbox{]}. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_model_predict_af2faccd53fa53bbea5be1d2829a5eb66}\label{class_model_predict_af2faccd53fa53bbea5be1d2829a5eb66}} 
+\index{ModelPredict@{ModelPredict}!GetPredictLabel@{GetPredictLabel}}
+\index{GetPredictLabel@{GetPredictLabel}!ModelPredict@{ModelPredict}}
+\doxysubsubsection{\texorpdfstring{GetPredictLabel()}{GetPredictLabel()}}
+{\footnotesize\ttfamily std\+::vector$<$ int $>$ Model\+Predict\+::\+Get\+Predict\+Label (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns a vector of predicted labels (id) to imply the class. 
+
+\begin{DoxyReturn}{Returns}
+(std\+::vector$<$int$>$) Vector of predicted labels (id). 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_model_predict_ab10be79b1983e6ea455e4b1b99437d7d}\label{class_model_predict_ab10be79b1983e6ea455e4b1b99437d7d}} 
+\index{ModelPredict@{ModelPredict}!GetPredictMask@{GetPredictMask}}
+\index{GetPredictMask@{GetPredictMask}!ModelPredict@{ModelPredict}}
+\doxysubsubsection{\texorpdfstring{GetPredictMask()}{GetPredictMask()}}
+{\footnotesize\ttfamily std\+::vector$<$ cv\+::\+Mat $>$ Model\+Predict\+::\+Get\+Predict\+Mask (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns a vector of predicted masks. 
+
+\begin{DoxyReturn}{Returns}
+(std\+::vector$<$cv\+::\+Mat$>$) Vector of predicted masks. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_model_predict_a82779c886f350153b3dedd6af11e876a}\label{class_model_predict_a82779c886f350153b3dedd6af11e876a}} 
+\index{ModelPredict@{ModelPredict}!GetPredictScore@{GetPredictScore}}
+\index{GetPredictScore@{GetPredictScore}!ModelPredict@{ModelPredict}}
+\doxysubsubsection{\texorpdfstring{GetPredictScore()}{GetPredictScore()}}
+{\footnotesize\ttfamily std\+::vector$<$ float $>$ Model\+Predict\+::\+Get\+Predict\+Score (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns a vector of predicted scores. 
+
+\begin{DoxyReturn}{Returns}
+(std\+::vector$<$float$>$) Vector of predicted scores. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_model_predict_abcd6a0914547704121e9daa85f568de2}\label{class_model_predict_abcd6a0914547704121e9daa85f568de2}} 
+\index{ModelPredict@{ModelPredict}!LoadModel@{LoadModel}}
+\index{LoadModel@{LoadModel}!ModelPredict@{ModelPredict}}
+\doxysubsubsection{\texorpdfstring{LoadModel()}{LoadModel()}}
+{\footnotesize\ttfamily bool Model\+Predict\+::\+Load\+Model (\begin{DoxyParamCaption}\item[{char $\ast$}]{model\+\_\+path }\end{DoxyParamCaption})}
+
+
+
+Loads the model from the specified path. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em model\+\_\+path} & (char$\ast$)\+: Path to the onnx model file. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+(bool) True if the model was loaded successfully, false otherwise. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_model_predict_af13e1fdffa03809593961a27ba526230}\label{class_model_predict_af13e1fdffa03809593961a27ba526230}} 
+\index{ModelPredict@{ModelPredict}!PredictAction@{PredictAction}}
+\index{PredictAction@{PredictAction}!ModelPredict@{ModelPredict}}
+\doxysubsubsection{\texorpdfstring{PredictAction()}{PredictAction()}}
+{\footnotesize\ttfamily bool Model\+Predict\+::\+Predict\+Action (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{input\+Img,  }\item[{float}]{score\+\_\+thresh = {\ttfamily 0.7} }\end{DoxyParamCaption})}
+
+
+
+Predicts the action based on the input image. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em input\+Img} & (cv\+::\+Mat\&)\+: Original input image for prediction. \\
+\hline
+{\em score\+\_\+thresh} & (float)\+: Threshold score for output results (default\+: 0.\+7), only higher score results will be saved in the model prediction object. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+(bool) True if the prediction was successful, false otherwise. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_model_predict_af50700fe2ade8a3127ef9241aa91b18a}\label{class_model_predict_af50700fe2ade8a3127ef9241aa91b18a}} 
+\index{ModelPredict@{ModelPredict}!ShowPredictMask@{ShowPredictMask}}
+\index{ShowPredictMask@{ShowPredictMask}!ModelPredict@{ModelPredict}}
+\doxysubsubsection{\texorpdfstring{ShowPredictMask()}{ShowPredictMask()}}
+{\footnotesize\ttfamily cv\+::\+Mat Model\+Predict\+::\+Show\+Predict\+Mask (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{input\+Img,  }\item[{float}]{score\+Threshold = {\ttfamily 0.7} }\end{DoxyParamCaption})}
+
+
+
+Returns an image of the predicted result plotted with masks, bounding boxes and scores. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em imput\+Img} & (cv\+::\+Mat)\+: Original input image, should be the same as Predict\+Action-\/input\+Img. \\
+\hline
+{\em score\+Threshold} & (float)\+: Threshold score imply to display the result, the masks and bboxes above the score will be displayed on the image \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+(cv\+::\+Mat) An image of the predicted result with masks, bboxes and scores. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/\+Gilbert\+Pan/\+Documents/\+Github\+\_\+\+WS/\+Mask\+RCNN-\/\+Pytorch/deploy/onnx\+\_\+cpp/src/\+Model\+Predict/Model\+Predict.\+h\item 
+C\+:/\+Users/\+Gilbert\+Pan/\+Documents/\+Github\+\_\+\+WS/\+Mask\+RCNN-\/\+Pytorch/deploy/onnx\+\_\+cpp/src/\+Model\+Predict/Model\+Predict.\+cpp\end{DoxyCompactItemize}
