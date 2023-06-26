@@ -1,0 +1,24 @@
+\hypertarget{_model_predict_global_8h_source}{}\doxysection{Model\+Predict\+Global.\+h}
+\label{_model_predict_global_8h_source}\index{C:/Users/GilbertPan/Documents/Github\_WS/MaskRCNN-\/Pytorch/deploy/onnx\_cpp/src/ModelPredict/ModelPredictGlobal.h@{C:/Users/GilbertPan/Documents/Github\_WS/MaskRCNN-\/Pytorch/deploy/onnx\_cpp/src/ModelPredict/ModelPredictGlobal.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef MODELPREDICTGLOBAL\_H}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define MODELPREDICTGLOBAL\_H}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#ifndef MP\_STATIC}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#ifdef MP\_SHARED\_EXPORT}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#define MP\_EXPORT \_\_declspec(dllexport)}}
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#define MP\_EXPORT \_\_declspec(dllimport)}}
+\DoxyCodeLine{9 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#define MP\_EXPORT}}
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#ifdef WIN32}}
+\DoxyCodeLine{15 \textcolor{preprocessor}{\#include <windows.h>}}
+\DoxyCodeLine{16 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{17 }
+\DoxyCodeLine{18 \textcolor{preprocessor}{\#endif }\textcolor{comment}{// MODELPREDICTGLOBAL\_H}}
+
+\end{DoxyCode}

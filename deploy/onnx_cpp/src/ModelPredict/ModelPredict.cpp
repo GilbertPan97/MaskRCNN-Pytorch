@@ -1,3 +1,25 @@
+/********************************************************************************
+ * @file ModelPredict.cpp
+ * @brief ModelPredict.cpp is designed for C++ deploying onnx models. The model inference is 
+ * implemented based on onnxruntime. Due to the API incompatibility between different 
+ * versions of onnxruntime, currently this version only supports running on onnxruntime 1.12.1.
+ * @author Pan, Jiabin
+ * @date 2023.06.26
+ * @company Shanghai Fanuc Robotics Co., Ltd.
+ * @license Apache License, Version 2.0
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
 #include "ModelPredict.h"
 
 #include <fstream>
@@ -236,7 +258,7 @@ cv::Mat ModelPredict::ShowPredictMask(cv::Mat& inputImg, float scoreThreshold){
 		cv::String marker = class_name + " " + str_score;
 		
 		// draw bbox
-		auto& curBbox = bboxes_[i];
+		auto& curBbox = bboxes_[i];		// current bounding box in loop (curBbox: x0, y0, x1, y1)
 		drawDashRect(result, cv::Point(curBbox[0], curBbox[1]), cv::Point(curBbox[2], curBbox[3]), curColor, 2);
 		
 		// draw marker (class name and score)
@@ -285,6 +307,53 @@ void ModelPredict::softNMSBoxes_filter(float score_threshold, float nms_threshol
 std::vector<std::array<float, 4>> ModelPredict::GetBoundingBox()
 {
 	return bboxes_;
+}
+
+std::vector<std::vector<cv::Point2f>> ModelPredict::GetMinBoundingBox()
+{
+    std::vector<std::vector<cv::Point2f>> min_bboxes; 	// minimum bounding boxes
+
+    // Traverse the contour in the mask
+    for (auto & mask: masks_)
+    {
+        // Convert mask to binary image
+        cv::Mat binaryImage;
+        cv::threshold(mask, binaryImage, 0, 255, cv::THRESH_BINARY);
+
+        // Find mask contour
+        std::vector<std::vector<cv::Point>> contours;
+		binaryImage.convertTo(binaryImage, CV_8UC1);	// It is important since findContours only support CV_8UC1 
+        cv::findContours(binaryImage, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+        // Check if any contours are found
+        if (!contours.empty())
+        {
+            // Calculate minimum bounding rectangle
+            cv::RotatedRect boundingRect = cv::minAreaRect(contours[0]);
+
+            // Convert the rotated rectangle to a vector of points
+            cv::Point2f vertices[4];
+            boundingRect.points(vertices);
+            std::vector<cv::Point2f> min_bbox(vertices, vertices + 4);
+
+            // Store the minimum bounding rectangle in the result vector
+            min_bboxes.push_back(min_bbox);
+			
+			// Draw bounding box on binary image
+			// Convert the rotated rectangle vertices to integer points
+			cv::Point verticesInt[4];
+			for (int i = 0; i < 4; i++)
+			{
+				verticesInt[i] = cv::Point(static_cast<int>(vertices[i].x), static_cast<int>(vertices[i].y));
+			}
+            cv::polylines(binaryImage, std::vector<cv::Point>{verticesInt, verticesInt + 4}, true, cv::Scalar(255), 2);
+        }
+
+		cv::imshow("Mask in binary format", binaryImage);
+		cv::waitKey(0);
+    }
+
+    return min_bboxes;
 }
 
 std::vector<cv::Mat> ModelPredict::GetPredictMask()

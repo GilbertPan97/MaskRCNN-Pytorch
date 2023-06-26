@@ -32,6 +32,8 @@ Alternatively, you can use an IDE such as VSCode or CLion instead to execute CMa
 
 4. The compiled executable and library outputs can be found in folder `version_*`.
 
+Note: The ModelPredict library relies on the onnxruntime 1.12.1 inference engine for execution. For detailed information about the library's APIs, please refer to [page](./Doxygen/html/index.html).
+
 ## Contributing
 
 Contributions are welcome for this repository. Fork the repository, make your changes, and submit a pull request. Please ensure that your changes are compatible with onnxruntime version 1.12.1.
