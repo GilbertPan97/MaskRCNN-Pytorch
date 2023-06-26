@@ -36,7 +36,6 @@ private:
 	std::vector<cv::Scalar> colors_list_;
 
 public:
-	
 	/** @brief Initializes the ModelPredict object.
 	 * @param with_gpu (bool): Specifies whether to use GPU acceleration (default: false).
 	 * @param device_id (int): ID of the GPU/CPU device to be used (default: 0).
