@@ -349,8 +349,8 @@ std::vector<std::vector<cv::Point2f>> ModelPredict::GetMinBoundingBox()
             cv::polylines(binaryImage, std::vector<cv::Point>{verticesInt, verticesInt + 4}, true, cv::Scalar(255), 2);
         }
 
-		cv::imshow("Mask in binary format", binaryImage);
-		cv::waitKey(0);
+		// cv::imshow("Mask in binary format", binaryImage);
+		// cv::waitKey(0);
     }
 
     return min_bboxes;
