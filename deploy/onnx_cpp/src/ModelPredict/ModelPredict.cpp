@@ -318,7 +318,7 @@ std::vector<std::vector<cv::Point2f>> ModelPredict::GetMinBoundingBox()
     {
         // Convert mask to binary image
         cv::Mat binaryImage;
-        cv::threshold(mask, binaryImage, 0, 255, cv::THRESH_BINARY);
+        cv::threshold(mask, binaryImage, 0.5, 255, cv::THRESH_BINARY);
 
         // Find mask contour
         std::vector<std::vector<cv::Point>> contours;
