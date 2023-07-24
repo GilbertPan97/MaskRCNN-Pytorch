@@ -23,7 +23,7 @@
 #include "ModelPredict.h"
 
 #include <fstream>
-#ifdef WIN32
+#if WIN32
 #include <windows.h>
 #endif
 
