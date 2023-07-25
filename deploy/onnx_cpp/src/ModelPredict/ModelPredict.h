@@ -26,7 +26,8 @@ private:
 	std::vector<char*> output_names_;
 
 	// inference results
-	std::vector<std::array<float, 4>> bboxes_;
+	std::vector<std::array<float, 4>> bboxes_;		// element: [x_min, y_min, x_max, y_max]
+	std::vector<std::array<float, 8>> minbboxes_;	// element: [x0, y0, x1, y1, x2, y2, x3, y3]
 	std::vector<int> labels_;
 	std::vector<cv::String> classes_name_;
 	std::vector<float> scores_;
@@ -68,34 +69,41 @@ public:
 	cv::Mat ShowPredictMask(cv::Mat& inputImg, float scoreThreshold = 0.7);
 
 	/** @brief Returns a vector of bounding box coordinates.
-	 * @return (std::vector<std::array<float, 4>>) Vector of bounding box coordinates, 
-	 * where each element is a vector containing [x0, y0, x1, y1].
+	 * @return (std::vector<std::vector<cv::Point2f>>) Vector of bounding box coordinates, 
+	 * where each element is a vector containing [(x_min, y_min), (x_max, y_max)].
 	 */
-	std::vector<std::array<float, 4>> GetBoundingBox();
+	std::vector<std::vector<cv::Point2f>> GetBoundingBoxes();
 
 	/** @brief Returns a vector of minimum bounding box coordinates.
 	 * @return (std::vector<std::vector<cv::Point2f>>) Vector of minimum bounding box coordinates, 
 	 * where each element is a vector containing [[(x0, y0), (x1, y1), (x2, y2), (x3, y3)]].
 	 */
-	std::vector<std::vector<cv::Point2f>> GetMinBoundingBox();
+	std::vector<std::vector<cv::Point2f>> GetMinBoundingBoxes();
+
+	/** @brief Returns the angle vector of the minimum bounding box inclination
+	 * @return (std::vector<float>) Vector of minimum bounding box inclination angles.
+	 */
+	std::vector<float> GetBoundingBoxAngles();
 
 	/** @brief Returns a vector of predicted masks.
 	 * @return (std::vector<cv::Mat>) Vector of predicted masks.
 	 */
-	std::vector<cv::Mat> GetPredictMask();
+	std::vector<cv::Mat> GetPredictMasks();
 
 	/** @brief Returns a vector of predicted labels (id) to imply the class.
 	 * @return (std::vector<int>) Vector of predicted labels (id).
 	 */
-	std::vector<int> GetPredictLabel();
+	std::vector<int> GetPredictLabels();
 
 	/** @brief Returns a vector of predicted scores.
 	 * @return (std::vector<float>) Vector of predicted scores.
 	 */
-	std::vector<float> GetPredictScore();
+	std::vector<float> GetPredictScores();
 
 private:
 	void softNMSBoxes_filter(float score_threshold = 0.5, float nms_threshold = 0.6);
+
+	void calcMinBoundingBoxes();
 
 	void drawDashRect(cv::Mat& img, cv::Point p1, cv::Point p2, 
 					  cv::Scalar& color, int thickness = 1);

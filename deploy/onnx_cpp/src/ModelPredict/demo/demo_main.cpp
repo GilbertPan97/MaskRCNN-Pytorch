@@ -23,7 +23,7 @@ using namespace cv::dnn;
 						   vector<string>& vFileName)
 	{
 		string file_dir = strDir;
-		intptr_t handle;    // file handle
+		intptr_t handle;    			// file handle
 		struct _finddata_t fileInfo;    // file struct
 		handle = _findfirst(strDir.append("/*").c_str(), &fileInfo);    // get file handle first
 		while (!_findnext(handle, &fileInfo)){
@@ -69,8 +69,8 @@ int main(int argc, char* argv[])
 	readFileNameInDir(img_dir, vec_img_paths, vec_img_names);
 
 	// construct ModelPredict object and load model
-	ModelPredict onnx_ip(true, 0);
-	onnx_ip.LoadModel(model_path);
+	ModelPredict onnx_mp(true, 0);
+	onnx_mp.LoadModel(model_path);
 
 	cout << "INFO: All inference images: " << vec_img_paths.size() << endl;
 	for (size_t i = 0; i < vec_img_paths.size(); i++){
@@ -78,12 +78,20 @@ int main(int argc, char* argv[])
 		cv::Mat img = imread(vec_img_paths[i]);
 
 		float score_thresh = 0.6f;
-		bool status = onnx_ip.PredictAction(img, score_thresh);
+		bool status = onnx_mp.PredictAction(img, score_thresh);
 
-		cv::Mat result_img = onnx_ip.ShowPredictMask(img, score_thresh);
+		cv::Mat result_img = onnx_mp.ShowPredictMask(img, score_thresh);
 
+		// Get minimum bounding boxes
 		std::vector<std::vector<cv::Point2f>> min_bboxes;
-		min_bboxes = onnx_ip.GetMinBoundingBox();
+		min_bboxes = onnx_mp.GetMinBoundingBoxes();
+
+		// Get bounding box angels
+		std::vector<float> bbox_angles = onnx_mp.GetBoundingBoxAngles();
+		std::cout << "INFO: Bounding box inclination angles are: ";
+		for (const auto& element : bbox_angles)
+        	std::cout << element << " ";
+		std::cout << std::endl;
 
 		cv::String save_path = save_dir + "/" + vec_img_names[i];
 		imwrite(save_path, result_img);
