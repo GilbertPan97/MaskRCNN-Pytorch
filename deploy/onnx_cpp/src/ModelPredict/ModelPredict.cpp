@@ -115,6 +115,7 @@ bool ModelPredict::LoadModel(char* model_path){
 bool ModelPredict::PredictAction(cv::Mat& inputImg, float score_thresh){ 
 	// clear results member
     bboxes_.clear();
+	minbboxes_.clear();
 	labels_.clear();
 	scores_.clear();
 	masks_.clear();
@@ -189,12 +190,15 @@ bool ModelPredict::PredictAction(cv::Mat& inputImg, float score_thresh){
 			mask_height * mask_width * sizeof(float));
 		masks_.emplace_back(curMask);
 	}
+	// filter predict results with soft NMS
+	softNMSBoxes_filter();		// this function will reshape masks_, bboxes_, ...
+
+	// calculate minum bBoxes with masks
+	calcMinBoundingBoxes();
 
 	// get random colors list for mask show
 	colors_list_ = random_colors(nBoxes);
 
-	// filter predict results with soft NMS
-	softNMSBoxes_filter();
 	return true;
 }
 
@@ -278,8 +282,8 @@ void ModelPredict::softNMSBoxes_filter(float score_threshold, float nms_threshol
 	for (size_t i = 0; i < bboxes_.size(); i++){
 		int left = bboxes_[i][0];
 		int top = bboxes_[i][1];
-		int width = bboxes_[i][2]-bboxes_[i][0];
-		int heigh = bboxes_[i][3]-bboxes_[i][1];
+		int width = bboxes_[i][2] - bboxes_[i][0];
+		int heigh = bboxes_[i][3] - bboxes_[i][1];
 		cv_boxes.push_back(Rect(left, top, width, heigh));
 	}
 	
@@ -304,16 +308,9 @@ void ModelPredict::softNMSBoxes_filter(float score_threshold, float nms_threshol
 	masks_.erase(masks_.begin(), masks_.begin()+ori_nbbox);
 }
 
-std::vector<std::array<float, 4>> ModelPredict::GetBoundingBox()
+void ModelPredict::calcMinBoundingBoxes()
 {
-	return bboxes_;
-}
-
-std::vector<std::vector<cv::Point2f>> ModelPredict::GetMinBoundingBox()
-{
-    std::vector<std::vector<cv::Point2f>> min_bboxes; 	// minimum bounding boxes
-
-    // Traverse the contour in the mask
+	// Traverse the contour in the mask
     for (auto & mask: masks_)
     {
         // Convert mask to binary image
@@ -336,37 +333,121 @@ std::vector<std::vector<cv::Point2f>> ModelPredict::GetMinBoundingBox()
             boundingRect.points(vertices);
             std::vector<cv::Point2f> min_bbox(vertices, vertices + 4);
 
-            // Store the minimum bounding rectangle in the result vector
-            min_bboxes.push_back(min_bbox);
-			
-			// Draw bounding box on binary image
-			// Convert the rotated rectangle vertices to integer points
-			cv::Point verticesInt[4];
-			for (int i = 0; i < 4; i++)
-			{
-				verticesInt[i] = cv::Point(static_cast<int>(vertices[i].x), static_cast<int>(vertices[i].y));
-			}
-            cv::polylines(binaryImage, std::vector<cv::Point>{verticesInt, verticesInt + 4}, true, cv::Scalar(255), 2);
-        }
+			// Store the minimum bounding rectangle in the MP member
+            minbboxes_.push_back({min_bbox[0].x, min_bbox[0].y, min_bbox[1].x, min_bbox[1].y,
+								  min_bbox[2].x, min_bbox[2].y, min_bbox[3].x, min_bbox[3].y});
+		}
+	}
+}
+
+std::vector<std::vector<cv::Point2f>> ModelPredict::GetBoundingBoxes()
+{
+	std::vector<std::vector<cv::Point2f>> bboxes;
+	for(auto box: bboxes_){		// box: each bbox in array data
+		std::vector<cv::Point2f> cv_bbox = {		// cv_bbox: each bbox in cv point data
+			cv::Point2f(box[0], box[1]),
+			cv::Point2f(box[2], box[3])
+		};
+		bboxes.push_back(cv_bbox);
+	}
+	return bboxes;
+}
+
+std::vector<std::vector<cv::Point2f>> ModelPredict::GetMinBoundingBoxes()
+{
+    std::vector<std::vector<cv::Point2f>> min_bboxes; 	// minimum bounding boxes
+
+    // Traverse the contour in the mask
+	for (size_t i = 0; i < minbboxes_.size(); i++)
+	{
+		// Convert mask to binary image to diaplay
+        cv::Mat binaryImage;
+        cv::threshold(masks_[i], binaryImage, 0.5, 255, cv::THRESH_BINARY);
+
+		// Convert the minbboxes from array data to cv Point data
+		std::vector<cv::Point2f> min_bbox;
+		for (size_t j = 0; j < minbboxes_[i].size(); j += 2) {
+			cv::Point2f point(minbboxes_[i][j], minbboxes_[i][j + 1]);
+			min_bbox.push_back(point);
+		}
+
+		// Draw bounding box on binary image
+		// Convert the rotated rectangle vertices to integer points
+		cv::Point verticesInt[4];
+		for (int j = 0; j < 4; j++)
+			verticesInt[j] = cv::Point(static_cast<int>(min_bbox[j].x), static_cast<int>(min_bbox[j].y));
+		cv::polylines(binaryImage, std::vector<cv::Point>{verticesInt, verticesInt + 4}, true, cv::Scalar(255), 2);
 
 		// cv::imshow("Mask in binary format", binaryImage);
 		// cv::waitKey(0);
-    }
+
+		min_bboxes.push_back(min_bbox);
+	}
 
     return min_bboxes;
 }
 
-std::vector<cv::Mat> ModelPredict::GetPredictMask()
+std::vector<float> ModelPredict::GetBoundingBoxAngles()
+{
+	// Lambda function to calculate bbox inclination angles
+	auto CalcbBoxIncline = [](std::vector<cv::Point2f> box) 
+	{
+		float angle;
+		RotatedRect rect = minAreaRect(box);
+    	
+		if (rect.size.width > rect.size.height) {
+			angle = rect.angle; 	// The angle of the length side (longer side) of the rectangle
+		} else
+			angle = rect.angle + 90.0f; 	// Add 90 degrees for the angle of the length side
+
+		return angle;
+	};
+
+	std::vector<float> minbBoxAngels;
+	auto bboxes = GetBoundingBoxes();	// bounding box in cv data, [x_min, y_min, x_max, y_max]
+	
+	// reshape bboxes to [x0, y0, ..., y3]
+	for(std::vector<cv::Point2f> &bbox: bboxes){
+		// point: [x_min, y_min] view as [x0, y0]
+		cv::Point2f pnt1(bbox[0].x, bbox[1].y);
+		cv::Point2f pnt3(bbox[1].x, bbox[0].y);
+
+		bbox.insert(bbox.begin() + 1, pnt1);
+		bbox.push_back(pnt3);
+	}
+
+	auto minbboxes = GetMinBoundingBoxes();		// bounding box in cv data, [x0, y0, ..., y3]
+	for (size_t i = 0; i < minbboxes.size(); i++)
+	{
+		
+		float angle1 = CalcbBoxIncline(bboxes[i]);
+		float angle2 = CalcbBoxIncline(minbboxes[i]);
+
+		float angleDiff = angle2 - angle1;
+
+		// limit angeels in range [-90, 90]
+		while (angleDiff < -90.0f)
+			angleDiff += 180.0f;
+		while (angleDiff > 90.0f)
+			angleDiff -= 180.0f;
+		
+		minbBoxAngels.push_back(angleDiff);
+	}
+
+	return minbBoxAngels;
+}
+
+std::vector<cv::Mat> ModelPredict::GetPredictMasks()
 {
 	return masks_;
 }
 
-std::vector<int> ModelPredict::GetPredictLabel()
+std::vector<int> ModelPredict::GetPredictLabels()
 {
 	return labels_;
 }
 
-std::vector<float> ModelPredict::GetPredictScore()
+std::vector<float> ModelPredict::GetPredictScores()
 {
 	return scores_;
 }
@@ -383,12 +464,12 @@ cv::Scalar ModelPredict::hsv_to_rgb(std::vector<float> hsv){
 		rgb = {v, v, v};
 		return rgb;
 	}
-    int i = int(h*6.0); // XXX assume int() truncates!
+    int i = int(h*6.0); // assume int() truncates!
 	float f = (h*6.0) - i;
     float p = v*(1.0 - s);
     float q = v*(1.0 - s*f);
     float t = v*(1.0 - s*(1.0-f));
-	i = i%6;
+	i = i % 6;
 
 	// get rgb (value range: 0~1)
 	switch (i)
