@@ -7,8 +7,8 @@ set(CMAKE_RELWITHDEBINFO_POSTFIX "rd" CACHE STRING "add a postfix, usually empty
 set(CMAKE_MINSIZEREL_POSTFIX "s" CACHE STRING "add a postfix, usually empty on windows")
 
 # option(WITH_OPENCV "Run onnx model with opencv" OFF)
-option(WITH_GPU "Inference with cuda" ON)
-option(BUILD_SHARED "Build librarys with dll output" ON)
+option(WITH_GPU "Inference with cuda" OFF)
+option(BUILD_SHARED "Build librarys with dll output" OFF)
 option(BUILD_EXAMPLE "Build example" ON)
 
 # add different dependences of ORT

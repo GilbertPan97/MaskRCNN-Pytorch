@@ -2,14 +2,14 @@ set(LIBS_NAME ModelPredict)
 
 # opencv is necessory
 if (WIN32)
-  find_package(OpenCV REQUIRED HINTS ${THIRD_PARTY} NO_DEFAULT_PATH)
+  find_package(OpenCV REQUIRED HINTS ${THIRD_PARTY}/opencv-win* NO_DEFAULT_PATH)
 else ()
   if (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64") # x86_64 aarch64
     find_package(OpenCV REQUIRED)
     # set(OpenCV_INCLUDE_DIRS "/usr/include/opencv4")
     # file(GLOB OpenCV_LIBS /usr/lib/aarch64-linux-gnu/libopencv_*${CMAKE_SHARED_LIBRARY_SUFFIX})
   else()
-    find_package(OpenCV REQUIRED PATHS ${OPENCV_DIR} NO_DEFAULT_PATH)
+    find_package(OpenCV REQUIRED HINTS ${THIRD_PARTY}/opencv-linux-4.6.0 NO_DEFAULT_PATH)
   endif()
 endif ()
 # message(STATUS "OpenCV dir: ${OpenCV_DIR}")
