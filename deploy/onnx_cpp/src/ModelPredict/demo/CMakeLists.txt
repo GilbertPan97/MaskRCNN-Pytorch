@@ -5,12 +5,12 @@ set(SRC_FILES demo_main.cpp)
 add_executable(demo_mp ${SRC_FILES})
 
 target_link_libraries(demo_mp PUBLIC 
-                     ${ORT_LIBS} ${OpenCV_LIBS})
+                      ${ONNX_LIBRARIES} ${OpenCV_LIBS})
 
 target_link_libraries(demo_mp PRIVATE ${LIBS_NAME})
 
 target_include_directories(demo_mp PUBLIC 
-                           ${ORT_INCLUDE_DIRS}
+                           ${ONNX_INCLUDE_DIR}
                            ${OpenCV_INCLUDE_DIRS})
 
 target_include_directories(demo_mp PRIVATE 
