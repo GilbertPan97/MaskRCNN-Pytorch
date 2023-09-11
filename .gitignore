@@ -52,6 +52,7 @@ deploy/onnx_cpp/pkg_cache/
 deploy/onnx_cpp/models/
 
 # Ori images
+deploy/onnx_cpp/images/test_imgs
 deploy/onnx_cpp/inference_results/
 
 # third_party
