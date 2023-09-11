@@ -61,7 +61,7 @@ using namespace cv::dnn;
 
 int main(int argc, char* argv[])
 {
-	char* model_path = "../models/box/patched.onnx";
+	char* model_path = "../models/box/mask_rcnn_sim.onnx";
 	String img_dir = "../images/test_imgs/";
 
 	string save_dir = "../inference_results/box";
@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
 
 	cout << "INFO: All inference images: " << vec_img_paths.size() << endl;
 	for (size_t i = 0; i < vec_img_paths.size(); i++){
-		cout << "INFO: inference at img: " << vec_img_names[i] << endl;
+		cout << "INFO: inference at: " << std::to_string(i) << ", img name is: " << vec_img_names[i]<< endl;
 		cv::Mat img = imread(vec_img_paths[i]);
 
 		float score_thresh = 0.6f;
@@ -86,21 +86,26 @@ int main(int argc, char* argv[])
 
 		cv::Mat result_img = onnx_mp.ShowPredictMask(img, score_thresh);
 
-		// Get minimum bounding boxes
-		std::vector<std::vector<cv::Point2f>> min_bboxes;
-		min_bboxes = onnx_mp.GetMinBoundingBoxes();
+		// // Get minimum bounding boxes
+		// std::vector<std::vector<cv::Point2f>> min_bboxes;
+		// min_bboxes = onnx_mp.GetMinBoundingBoxes();
 
-		// Get bounding box angels
-		std::vector<float> bbox_angles = onnx_mp.GetBoundingBoxAngles();
-		std::cout << "INFO: Bounding box inclination angles are: ";
-		for (const auto& element : bbox_angles)
-        	std::cout << element << " ";
-		std::cout << std::endl;
+		// // Get bounding box angels
+		// std::vector<float> bbox_angles = onnx_mp.GetBoundingBoxAngles();
+		// std::cout << "INFO: Bounding box inclination angles are: ";
+		// for (const auto& element : bbox_angles)
+        // 	std::cout << element << " ";
+		// std::cout << std::endl;
 
+		// Save images
 		cv::String save_path = save_dir + "/" + vec_img_names[i];
 		imwrite(save_path, result_img);
-		// cv::imshow("Inference result of image-[" + std::to_string(i) + "]", result_img);
-		// waitKey(0);
+
+		// // Images display
+		// cv::String win_name = "Inference result of image-[" + std::to_string(i) + "]";
+		// cv::namedWindow(win_name, cv::WINDOW_NORMAL);
+		// cv::imshow(win_name, result_img);
+		// cv::waitKey(500);
 	}
 	return 0;
 }
