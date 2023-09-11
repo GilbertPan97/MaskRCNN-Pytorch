@@ -24,6 +24,8 @@ private:
 	// model info
 	std::vector<char*> input_names_;
 	std::vector<char*> output_names_;
+	std::vector<Ort::AllocatedStringPtr> input_names_ptr_;
+	std::vector<Ort::AllocatedStringPtr> output_names_ptr_;		// avoid names pointer to be released.
 
 	// inference results
 	std::vector<std::array<float, 4>> bboxes_;		// element: [x_min, y_min, x_max, y_max]

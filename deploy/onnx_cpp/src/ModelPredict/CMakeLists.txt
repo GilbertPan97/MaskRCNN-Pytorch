@@ -14,7 +14,7 @@ else ()
 endif ()
 
 # Add ort dependence
-find_dep_path("onnxruntime" "1.12.1" ONNX_ROOT_DIR)
+find_dep_path("onnxruntime" "1.15.1" ONNX_ROOT_DIR)
 message(STATUS ${ONNX_ROOT_DIR})
 find_package(ONNX REQUIRED)
 message(STATUS "Find package status is: ${ONNX_FOUND}")
@@ -47,6 +47,8 @@ target_include_directories(${LIBS_NAME} PUBLIC
                       ${ONNX_INCLUDE_DIR})
 
 set_target_properties(${LIBS_NAME} PROPERTIES
+                      CXX_STANDARD 17
+                      CXX_STANDARD_REQUIRED ON
                       ARCHIVE_OUTPUT_DIRECTORY "${OUTPUT_DIR}"
                       LIBRARY_OUTPUT_DIRECTORY "${OUTPUT_DIR}"
                       RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}")

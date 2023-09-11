@@ -99,8 +99,8 @@ int main(int argc, char* argv[])
 
 		cv::String save_path = save_dir + "/" + vec_img_names[i];
 		imwrite(save_path, result_img);
-		cv::imshow("Inference result of image-[" + std::to_string(i) + "]", result_img);
-		waitKey(0);
+		// cv::imshow("Inference result of image-[" + std::to_string(i) + "]", result_img);
+		// waitKey(0);
 	}
 	return 0;
 }
