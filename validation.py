@@ -119,7 +119,7 @@ def save_info(coco_evaluator,
 
 def main(parser_data):
     device = torch.device(parser_data.device if torch.cuda.is_available() else "cpu")
-    print("Using {} device training.".format(device.type))
+    print("Using {} device validate.".format(device.type))
 
     data_transform = {
         "val": transforms.Compose([transforms.ToTensor()])

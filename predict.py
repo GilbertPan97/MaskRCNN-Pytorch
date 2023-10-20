@@ -26,9 +26,10 @@ ROOT_DIR = os.path.abspath("./")
 MODEL_WEIGHT_PATH = os.path.join(ROOT_DIR, "models", "epoch_models", "epoch_model_35.pth")
 
 # predict result save dir
-INFERENCE_SAVE_DIR = os.path.join(ROOT_DIR, "inference_results")
+INFERENCE_SAVE_DIR = os.path.join(ROOT_DIR, "out", "predict")
 
-IMAGE_DIR = os.path.join(ROOT_DIR, "images")
+# image src
+IMAGE_DIR = os.path.join(ROOT_DIR, "coco_dataset", "images")
 
 
 class InferenceConfig():
