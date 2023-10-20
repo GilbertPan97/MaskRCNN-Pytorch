@@ -7,3 +7,9 @@ pycocotools
 Pillow
 torch==1.12
 torchvision==0.12
+
+# used for onnx model export
+onnx
+onnxruntime
+onnxsim
+onnx_graphsurgeon

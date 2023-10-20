@@ -2,29 +2,22 @@ set(LIBS_NAME ModelPredict)
 
 # opencv is necessory
 if (WIN32)
-  find_package(OpenCV REQUIRED HINTS ${THIRD_PARTY}/opencv-win* NO_DEFAULT_PATH)
+  find_package(OpenCV REQUIRED HINTS ${THIRD_PARTY}/opencv-4.5.4 NO_DEFAULT_PATH)
 else ()
   if (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64") # x86_64 aarch64
     find_package(OpenCV REQUIRED)
     # set(OpenCV_INCLUDE_DIRS "/usr/include/opencv4")
     # file(GLOB OpenCV_LIBS /usr/lib/aarch64-linux-gnu/libopencv_*${CMAKE_SHARED_LIBRARY_SUFFIX})
   else()
-    find_package(OpenCV REQUIRED HINTS ${THIRD_PARTY}/opencv-linux-4.6.0 NO_DEFAULT_PATH)
+    find_package(OpenCV REQUIRED HINTS ${THIRD_PARTY}/opencv NO_DEFAULT_PATH)
   endif()
 endif ()
-# message(STATUS "OpenCV dir: ${OpenCV_DIR}")
-# message(STATUS "OpenCV include dir: ${OpenCV_INCLUDE_DIRS}")
-# message(STATUS "OpenCV libs: ${OpenCV_LIBS}")
 
-# add ort dependence
-if(WIN32)
-    file(GLOB ORT_LIBS ${ORT_DIR}/lib/*.lib)
-    file(GLOB ORT_DLLS ${ORT_DIR}/lib/*.dll)
-else()
-    file(GLOB ORT_LIBS ${ORT_DIR}/lib/*)
-endif()
-
-set(ORT_INCLUDE_DIRS "${ORT_DIR}/include")
+# Add ort dependence
+find_dep_path("onnxruntime" "1.12.1" ONNX_ROOT_DIR)
+message(STATUS ${ONNX_ROOT_DIR})
+find_package(ONNX REQUIRED)
+message(STATUS "Find package status is: ${ONNX_FOUND}")
 
 # config ModelPredict lib build
 set(SRC_FILES ModelPredict.cpp)
@@ -47,12 +40,11 @@ else()
   target_compile_definitions(${LIBS_NAME} PUBLIC MP_STATIC)  
 endif()
 
-target_link_libraries(${LIBS_NAME} PUBLIC 
-                      ${OpenCV_LIBS} ${ORT_LIBS})
+target_link_libraries(${LIBS_NAME} PUBLIC ${OpenCV_LIBS} ${ONNX_LIBRARIES})
 
 target_include_directories(${LIBS_NAME} PUBLIC 
                       ${OpenCV_INCLUDE_DIRS} 
-                      ${ORT_INCLUDE_DIRS})
+                      ${ONNX_INCLUDE_DIR})
 
 set_target_properties(${LIBS_NAME} PROPERTIES
                       ARCHIVE_OUTPUT_DIRECTORY "${OUTPUT_DIR}"
