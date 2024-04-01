@@ -5,7 +5,7 @@ tqdm
 natsort
 pycocotools
 Pillow
-torch==1.12
+torch==1.11
 torchvision==0.12
 
 # used for onnx model export

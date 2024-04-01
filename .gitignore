@@ -7,6 +7,9 @@ coco_dataset*/
 # predict out dirs
 out/
 
+# train runs folder
+runs/
+
 # all zip file
 *.zip
 
