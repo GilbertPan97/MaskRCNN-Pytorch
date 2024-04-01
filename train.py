@@ -16,17 +16,6 @@ from utils.my_dataset_coco import CocoDetection
 from utils import train_eval_utils as utils
 
 
-def parse_arguments():
-    parser = argparse.ArgumentParser(description='Parse YAML config file')
-    parser.add_argument('--cfg', type=str, default='cfg/train.yaml', help='Path to the YAML config file')
-    parser.add_argument('--runs_dir', type=str, default='runs/exp/', help='Train record file directory')
-    parser.add_argument('--dataset', type=str, default='coco_dataset', help='COCO dataset root directory')
-    parser.add_argument('--train_with_coco', type=bool, default=True, help='Train with COCO weight or not')
-    parser.add_argument('--coco_weight_dir', type=str, default='coco', help='COCO model directory')
-    parser.add_argument('--base_weight_path', nargs='+', default='', help='Base weight path(s) for training')
-    return parser.parse_args()
-
-
 def load_config(config_file):
     with open(config_file, 'r') as f:
         config = yaml.safe_load(f)
@@ -199,6 +188,17 @@ def train(hyp, opt, device):
     if len(val_map) != 0:
         from utils.plot_curve import plot_map
         plot_map(val_map, opt.runs_dir)
+
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='Parse arguments for model training')
+    parser.add_argument('--dataset', type=str, default='coco_dataset', help='COCO dataset root directory')
+    parser.add_argument('--cfg', type=str, default='cfg/train.yaml', help='Path to the YAML config file')
+    parser.add_argument('--runs_dir', type=str, default='runs/exp/', help='Train record file directory')
+    parser.add_argument('--train_with_coco', type=bool, default=True, help='Train with COCO weight or not')
+    parser.add_argument('--coco_weight_dir', type=str, default='coco', help='COCO model directory')
+    parser.add_argument('--base_weight_path', nargs='+', default='', help='Base weight path(s) for training')
+    return parser.parse_args()
 
 
 if __name__ == "__main__":

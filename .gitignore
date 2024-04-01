@@ -3,6 +3,7 @@ log/
 
 # coco dataset
 coco_dataset*/
+dataset/
 
 # predict out dirs
 out/

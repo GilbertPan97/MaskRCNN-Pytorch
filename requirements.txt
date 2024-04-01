@@ -1,4 +1,5 @@
 lxml
+pyyaml
 matplotlib
 numpy
 tqdm
