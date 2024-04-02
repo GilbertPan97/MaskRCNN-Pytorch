@@ -3,6 +3,7 @@ import time
 import json
 import natsort
 import numpy as np
+import argparse
 from PIL import Image
 import torch
 from torchvision import transforms
@@ -13,30 +14,6 @@ from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 from network_files import MaskRCNN
 from backbone import resnet50_fpn_backbone
 from utils.draw_box_utils import draw_objs
-
-
-############################################################
-#  Configurations
-############################################################
-
-# project root dir and src root dir
-ROOT_DIR = os.path.abspath("./")
-
-# MODEL_WEIGHT_PATH -> path/to/last/trained/model/weight
-MODEL_WEIGHT_PATH = os.path.join(ROOT_DIR, "models", "epoch_models", "epoch_model_35.pth")
-
-# predict result save dir
-INFERENCE_SAVE_DIR = os.path.join(ROOT_DIR, "out", "predict")
-
-# image src
-IMAGE_DIR = os.path.join(ROOT_DIR, "coco_dataset", "images")
-
-
-class InferenceConfig():
-    # Number of classes (including background)
-    NUM_CLASSES = 1 + 1  # Background + sack
-
-    BOX_THRESH = 0.5
 
 
 ############################################################
@@ -78,45 +55,34 @@ def time_synchronized():
     return time.time()
 
 
-############################################################
-# main function
-############################################################
-
-def main():
-    config = InferenceConfig()
-    label_json_path = './record/coco_class_idx.json'
-
-    # get devices
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    print("using {} device.".format(device))
+def predict(opt, device):
+    # read class_indict
+    assert os.path.exists(opt.class_label), "json file {} dose not exist.".format(opt.class_label)
+    with open(opt.class_label, 'r') as json_file:
+        categorys = json.load(json_file)
 
     # create model
-    model = create_model(num_classes=config.NUM_CLASSES,
-                         box_thresh=config.BOX_THRESH)
-    # model = get_model_instance_segmentation(num_classes=config.NUM_CLASSES,
+    model = create_model(num_classes=len(categorys),
+                         box_thresh=opt.thresh)
+    # model = get_model_instance_segmentation(num_classes=len(categorys),
     #                                         load_pretrain_weights=True)
 
     # load train weights
-    assert os.path.exists(MODEL_WEIGHT_PATH), "{} file dose not exist.".format(MODEL_WEIGHT_PATH)
-    weights_dict = torch.load(MODEL_WEIGHT_PATH, map_location='cpu')
+    assert os.path.exists(opt.weight), "{} file dose not exist.".format(opt.weight)
+    weights_dict = torch.load(opt.weight, map_location=device)
     weights_dict = weights_dict["model"] if "model" in weights_dict else weights_dict
     model.load_state_dict(weights_dict)
     model.to(device)
 
-    # read class_indict
-    assert os.path.exists(label_json_path), "json file {} dose not exist.".format(label_json_path)
-    with open(label_json_path, 'r') as json_file:
-        category_index = json.load(json_file)
-
     # get image files list of IMAGE_DIR
-    file_list = os.listdir(IMAGE_DIR)
+    file_list = os.listdir(opt.images)
     file_list = natsort.natsorted(file_list)
 
     model.eval()  # 进入验证模式
     with torch.no_grad():
         for img_name in file_list:
             # load image
-            img_path = os.path.join(IMAGE_DIR, img_name)
+            img_path = os.path.join(opt.images, img_name)
             assert os.path.exists(img_path), f"{img_path} does not exits."
             original_img = Image.open(img_path).convert('RGB')
 
@@ -138,15 +104,33 @@ def main():
             predict_mask = np.squeeze(predict_mask, axis=1)     # [batch, 1, h, w] -> [batch, h, w]
 
             # plot and save predict result
-            if not os.path.exists(INFERENCE_SAVE_DIR):
-                os.makedirs(INFERENCE_SAVE_DIR)
-            imgs_path = os.path.join(INFERENCE_SAVE_DIR, img_name)
+            out_dir = os.path.join(opt.runs_dir, 'out')
+            if not os.path.exists(out_dir):
+                os.makedirs(out_dir)
+            imgs_path = os.path.join(out_dir, img_name)
             plot_img = draw_objs(
                 original_img, boxes=predict_boxes, classes=predict_classes,
-                scores=predict_scores, masks=predict_mask, category_index=category_index,
+                scores=predict_scores, masks=predict_mask, category_index=categorys,
                 line_thickness=2, font='arial.ttf', font_size=100)
             plot_img.save(imgs_path)
 
 
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='Parse arguments for model training')
+    parser.add_argument('--images', type=str, default='dataset/testimages', help='COCO dataset root directory')
+    parser.add_argument('--runs_dir', type=str, default='runs/exp', help='Train record file directory')
+    parser.add_argument('--weight', type=str, default='runs/exp/epoch_models/epoch_model_35.pth',
+                        help='Inference with trained weight')
+    parser.add_argument('--class_label', type=str, default='cfg/coco_class_idx.json', help='Class label')
+    parser.add_argument('--thresh', type=float, default=0.5, help='Model inference thresh')
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
-    main()
+    opt = parse_arguments()
+    print("Predict config is:\n", opt)
+    # get devices
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print("using {} device.".format(device))
+
+    predict(opt, device)

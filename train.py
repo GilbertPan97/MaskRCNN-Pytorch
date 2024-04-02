@@ -208,6 +208,7 @@ if __name__ == "__main__":
     print("Train config is:\n", cfg)
 
     # train on the GPU or on the CPU, if a GPU is not available
+    # device = torch.device('cpu')
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     print("Using {} device training.".format(device.type))
     train(cfg, opt, device)
