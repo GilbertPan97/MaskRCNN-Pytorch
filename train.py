@@ -192,7 +192,7 @@ def train(hyp, opt, device):
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Parse arguments for model training')
-    parser.add_argument('--dataset', type=str, default='coco_dataset', help='COCO dataset root directory')
+    parser.add_argument('--dataset', type=str, default='dataset', help='COCO dataset root directory')
     parser.add_argument('--cfg', type=str, default='cfg/train.yaml', help='Path to the YAML config file')
     parser.add_argument('--runs_dir', type=str, default='runs/exp/', help='Train record file directory')
     parser.add_argument('--train_with_coco', type=bool, default=True, help='Train with COCO weight or not')
