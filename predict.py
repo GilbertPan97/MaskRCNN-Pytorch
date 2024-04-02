@@ -5,6 +5,7 @@ import natsort
 import numpy as np
 import argparse
 from PIL import Image
+import cv2
 import torch
 from torchvision import transforms
 import torchvision.models
@@ -53,6 +54,39 @@ def get_model_instance_segmentation(num_classes, load_pretrain_weights=True):
 def time_synchronized():
     torch.cuda.synchronize() if torch.cuda.is_available() else None
     return time.time()
+
+
+def images_to_video(image_folder, output_video_name, fps=24):
+    # 获取文件夹中所有图片文件的路径
+    file_list = [os.path.join(image_folder, f) for f in os.listdir(image_folder) if
+                 f.endswith(('.png', '.jpg', '.jpeg', '.gif'))]
+
+    # 对文件列表进行自然排序
+    file_list_sorted = natsort.natsorted(file_list)
+
+    # 获取第一张图片的宽度和高度
+    first_img = Image.open(file_list_sorted[0])
+    width, height = first_img.size
+
+    # 定义视频编码器
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+
+    # 创建视频写入对象
+    out = cv2.VideoWriter(output_video_name, fourcc, fps, (width, height))
+
+    # 将每一帧图片写入视频
+    for img_path in file_list_sorted:
+        # 读取图片
+        img = cv2.imread(img_path)
+        # 将BGR格式转换为RGB格式
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        # 写入视频
+        out.write(img_rgb)
+
+    # 释放视频写入对象
+    out.release()
+
+    print("Video saved successfully.")
 
 
 def predict(opt, device):
@@ -132,5 +166,7 @@ if __name__ == '__main__':
     # get devices
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("using {} device.".format(device))
-
+    # inference exec
     predict(opt, device)
+    # save with video
+    images_to_video(os.path.join(opt.runs_dir, 'out'), os.path.join(opt.runs_dir, 'demo.mp4'), 5)

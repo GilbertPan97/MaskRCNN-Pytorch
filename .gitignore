@@ -14,6 +14,9 @@ runs/
 # all zip file
 *.zip
 
+# *.mp4
+*.mp4
+
 # src run file
 .idea/
 
