@@ -47,7 +47,6 @@ def get_model_instance_segmentation(num_classes, load_pretrain_weights=True):
     model.roi_heads.mask_predictor = MaskRCNNPredictor(in_features_mask,
                                                        hidden_layer,
                                                        num_classes)
-
     return model
 
 
@@ -57,35 +56,34 @@ def time_synchronized():
 
 
 def images_to_video(image_folder, output_video_name, fps=24):
-    # 获取文件夹中所有图片文件的路径
+    # Get paths of all image files in the folder
     file_list = [os.path.join(image_folder, f) for f in os.listdir(image_folder) if
                  f.endswith(('.png', '.jpg', '.jpeg', '.gif'))]
 
-    # 对文件列表进行自然排序
+    # Sort the file list in natural order
     file_list_sorted = natsort.natsorted(file_list)
 
-    # 获取第一张图片的宽度和高度
+    # Get width and height of the first image
     first_img = Image.open(file_list_sorted[0])
     width, height = first_img.size
 
-    # 定义视频编码器
+    # Define the video encoder
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 
-    # 创建视频写入对象
+    # Create the video writing object
     out = cv2.VideoWriter(output_video_name, fourcc, fps, (width, height))
 
-    # 将每一帧图片写入视频
+    # Write each frame of the image to the video
     for img_path in file_list_sorted:
-        # 读取图片
+        # Read the image
         img = cv2.imread(img_path)
-        # 将BGR格式转换为RGB格式
+        # Convert BGR format to RGB format
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        # 写入视频
+        # Write to the video
         out.write(img_rgb)
 
-    # 释放视频写入对象
+    # Release the video writing object
     out.release()
-
     print("Video saved successfully.")
 
 
@@ -151,7 +149,7 @@ def predict(opt, device):
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Parse arguments for model training')
-    parser.add_argument('--images', type=str, default='dataset/testimages', help='COCO dataset root directory')
+    parser.add_argument('--images', type=str, default='dataset/images', help='COCO dataset root directory')
     parser.add_argument('--runs_dir', type=str, default='runs/exp', help='Train record file directory')
     parser.add_argument('--weight', type=str, default='runs/exp/epoch_models/epoch_model_35.pth',
                         help='Inference with trained weight')

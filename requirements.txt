@@ -4,6 +4,7 @@ matplotlib
 numpy
 tqdm
 natsort
+opencv-python
 pycocotools
 Pillow
 torch==1.11
