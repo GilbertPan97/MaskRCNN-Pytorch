@@ -17,7 +17,7 @@ from utils.draw_box_utils import draw_objs
 ROOT_DIR = os.path.abspath("./")
 
 # output model dir(include epoch models and frozen model)
-MODELS_DIR = os.path.join(ROOT_DIR, "models")
+MODELS_DIR = os.path.join(ROOT_DIR, "runs", "exp")
 
 # transform pytorch model path
 WEIGHT_PATH = os.path.join(MODELS_DIR, "epoch_models", "epoch_model_35.pth")
@@ -26,7 +26,7 @@ WEIGHT_PATH = os.path.join(MODELS_DIR, "epoch_models", "epoch_model_35.pth")
 ONNX_MODEL_DIR = os.path.join(MODELS_DIR, "onnx_models")
 
 # test model images path
-IMG_PATH = os.path.join(ROOT_DIR, "coco_dataset", "images", "1_color.png")
+IMG_PATH = os.path.join(ROOT_DIR, "dataset", "images", "0211989685670_1711445097923_1711445097924_1711445098686.png")
 
 
 ############################################################
@@ -133,7 +133,7 @@ def fix_onnx_model(onnx_model_path, export_path):
 
 def main():
     # parameters initial
-    num_classes = 2     # background + sack
+    num_classes = 8     # background + sack
 
     # get devices
     device = torch.device("cpu")    # export onnx model with cpu
@@ -169,8 +169,8 @@ def main():
     fix_onnx_model(onnx_sim_model_path, fixed_model_path)
 
     # check export onnx model
-    label_json_path = './record/coco_class_idx.json'
-    verify_onnx_model(fixed_model_path, IMG_PATH, label_json_path)    # verify onnx model
+    label_json_path = './cfg/coco_class_idx.json'
+    verify_onnx_model(onnx_model_path, IMG_PATH, label_json_path)    # verify onnx model
 
 
 if __name__ == "__main__":
