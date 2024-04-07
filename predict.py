@@ -132,8 +132,8 @@ def predict(opt, device):
             predict_boxes = predictions["boxes"].to("cpu").numpy()
             predict_classes = predictions["labels"].to("cpu").numpy()
             predict_scores = predictions["scores"].to("cpu").numpy()
-            predict_mask = predictions["masks"].to("cpu").numpy()
-            predict_mask = np.squeeze(predict_mask, axis=1)     # [batch, 1, h, w] -> [batch, h, w]
+            predict_masks = predictions["masks"].to("cpu").numpy()
+            predict_masks = np.squeeze(predict_masks, axis=1)     # [batch, 1, h, w] -> [batch, h, w]
 
             # plot and save predict result
             out_dir = os.path.join(opt.runs_dir, 'out')
@@ -142,7 +142,7 @@ def predict(opt, device):
             imgs_path = os.path.join(out_dir, img_name)
             plot_img = draw_objs(
                 original_img, boxes=predict_boxes, classes=predict_classes,
-                scores=predict_scores, masks=predict_mask, category_index=categorys,
+                scores=predict_scores, masks=predict_masks, category_index=categorys,
                 line_thickness=2, font='arial.ttf', font_size=100)
             plot_img.save(imgs_path)
 
