@@ -69,20 +69,26 @@ def images_to_video(image_folder, output_video_name, fps=24):
     print("Video saved successfully.")
 
 
-def extract_center_line(predict_mask):
-    # 使用 Skeletonization 转换为中心线
-    skeleton = cv2.ximgproc.thinning(predict_mask)
-    # Thresholding to get binary mask
-    _, thresh = cv2.threshold(predict_mask, 0.5, 1, cv2.THRESH_BINARY)
-    # Find contours
-    contours, _ = cv2.findContours((thresh * 255).astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    max_contour = max(contours, key=cv2.contourArea)
-    hull = cv2.convexHull(max_contour)
-    hull = cv2.approxPolyDP(hull, 0.01*cv2.arcLength(hull, True), True)
-    M = cv2.moments(hull)
-    cX = int(M["m10"] / M["m00"])
-    cY = int(M["m01"] / M["m00"])
-    # return hull, (cX, cY)
+def extract_skeleton_line(predict_mask):
+    # 使用 Zhang-Suen 细化算法转换为中心线
+    skeleton = cv2.ximgproc.thinning(predict_mask, thinningType=cv2.ximgproc.THINNING_GUOHALL)
+
+    cv2.namedWindow('Skeleton', cv2.WINDOW_NORMAL)
+    cv2.imshow('Skeleton', skeleton)
+    cv2.waitKey(10)
+
+    # # 将输入图像上传到GPU
+    # d_predict_mask = cv2.cuda_GpuMat()
+    # d_predict_mask.upload(predict_mask)
+    # # 创建形态学滤波器对象
+    # morph_filter = cv2.cuda.createMorphologyFilter(cv2.MORPH_SKEL, d_predict_mask.depth(), kernelSize=(3, 3))
+    # # 在GPU上执行骨架提取操作
+    # d_skeleton = morph_filter.apply(d_predict_mask)
+    # # 将结果下载到CPU
+    # skeleton = d_skeleton.download()
+    # cv2.namedWindow('Skeleton', cv2.WINDOW_NORMAL)
+    # cv2.imshow('Skeleton', skeleton)
+    # cv2.waitKey(10)
     return skeleton
 
 def generate_center_line_points(hull, center):
@@ -165,13 +171,13 @@ def predict(opt, device):
                 cv2.imshow('Predict Mask', thresholded_predict_mask)
                 cv2.waitKey(10)
 
-                center = extract_center_line(thresholded_predict_mask)
-                center_line_points = generate_center_line_points(contour, center)
+                skeleton_line = extract_skeleton_line(thresholded_predict_mask)
+                # center_line_points = generate_center_line_points(skeleton_line, center)
                 # Draw center line
-                image_with_center_line = draw_center_line(thresholded_predict_mask, center_line_points)
-                cv2.namedWindow('Fit Line', cv2.WINDOW_NORMAL)
-                cv2.imshow('Fit Line', image_with_center_line)
-                cv2.waitKey(10)
+                # image_with_center_line = draw_center_line(thresholded_predict_mask, center_line_points)
+                # cv2.namedWindow('Fit Line', cv2.WINDOW_NORMAL)
+                # cv2.imshow('Fit Line', image_with_center_line)
+                # cv2.waitKey(10)
             else:
                 continue
 
