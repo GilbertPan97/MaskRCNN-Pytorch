@@ -169,15 +169,23 @@ def train(hyp, opt, device):
         val_map.append(det_info[1])         # pascal mAP
 
         # save epoch model weights
-        epoch_dir = os.path.join(opt.runs_dir, "epoch_models")
-        if not os.path.exists(epoch_dir):
-            os.makedirs(epoch_dir)
-        save_files = {
-            'model': model.state_dict(),
-            'optimizer': optimizer.state_dict(),
-            'lr_scheduler': lr_scheduler.state_dict(),
-            'epoch': epoch}
-        torch.save(save_files, epoch_dir+"/epoch_model_{}.pth".format(epoch))
+        if opt.runs_dir:
+            epoch_dir = os.path.join(opt.runs_dir, 'epoch_models')
+            if not os.path.exists(epoch_dir):
+                os.makedirs(epoch_dir)
+            
+            epoch_paths = [os.path.join(epoch_dir, 'epoch_model.pth')]
+            if (epoch + 1) % 50 == 0:
+                epoch_paths.append(os.path.join(epoch_dir, f'epoch_model{epoch:04}.pth'))
+            
+            for epoch_path in epoch_paths:
+                save_files = {
+                    'model': model.state_dict(),
+                    'optimizer': optimizer.state_dict(),
+                    'lr_scheduler': lr_scheduler.state_dict(),
+                    'epoch': epoch
+                }
+                torch.save(save_files, epoch_path)
 
     # plot loss and lr (learn rate) curve
     if len(train_loss) != 0 and len(learning_rate) != 0:
@@ -192,12 +200,20 @@ def train(hyp, opt, device):
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Parse arguments for model training')
-    parser.add_argument('--dataset', type=str, default='dataset', help='COCO dataset root directory')
-    parser.add_argument('--cfg', type=str, default='cfg/train.yaml', help='Path to the YAML config file')
-    parser.add_argument('--runs_dir', type=str, default='runs/exp/', help='Train record file directory')
-    parser.add_argument('--train_with_coco', type=bool, default=True, help='Train with COCO weight or not')
-    parser.add_argument('--coco_weight_dir', type=str, default='coco', help='COCO model directory')
-    parser.add_argument('--base_weight_path', nargs='+', default='', help='Base weight path(s) for training')
+    
+    parser.add_argument('--dataset', type=str, default='dataset', 
+                        help='COCO dataset root directory containing images and annotations')
+    parser.add_argument('--cfg', type=str, default='cfg/train.yaml', 
+                        help='Path to the YAML config file with model and training parameters')
+    parser.add_argument('--runs_dir', type=str, default='runs/exp/', 
+                        help='Directory to save training records, logs, and checkpoints')
+    parser.add_argument('--train_with_coco', type=bool, default=True, 
+                        help='Flag to indicate whether to train with COCO pretrained weights')
+    parser.add_argument('--coco_weight_dir', type=str, default='coco', 
+                        help='Directory containing COCO pretrained weights')
+    parser.add_argument('--base_weight_path', nargs='+', default='', 
+                        help='Path(s) to base weights for training, separated by spaces if multiple')
+    
     return parser.parse_args()
 
 

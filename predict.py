@@ -151,9 +151,9 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='Parse arguments for model training')
     parser.add_argument('--images', type=str, default='dataset/images', help='COCO dataset root directory')
     parser.add_argument('--runs_dir', type=str, default='runs/exp', help='Train record file directory')
-    parser.add_argument('--weight', type=str, default='runs/exp/epoch_models/epoch_model_35.pth',
+    parser.add_argument('--weight', type=str, default='runs/exp/epoch_models/epoch_model.pth',
                         help='Inference with trained weight')
-    parser.add_argument('--class_label', type=str, default='cfg/coco_class_idx.json', help='Class label')
+    parser.add_argument('--class_label', type=str, default='cfg/categories.json', help='Class label')
     parser.add_argument('--thresh', type=float, default=0.5, help='Model inference thresh')
     return parser.parse_args()
 

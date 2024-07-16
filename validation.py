@@ -24,7 +24,7 @@ from utils.draw_box_utils import draw_objs
 ROOT_DIR = os.path.abspath("./")
 
 # MODEL_WEIGHT_PATH -> path/to/last/trained/model/weight
-MODEL_WEIGHT_PATH = os.path.join(ROOT_DIR, "models", "epoch_models", "epoch_model_35.pth")
+MODEL_WEIGHT_PATH = os.path.join(ROOT_DIR, "models", "epoch_models", "epoch_model.pth")
 
 # predict result save dir
 INFERENCE_SAVE_DIR = os.path.join(ROOT_DIR, "out", "predict")
@@ -85,7 +85,7 @@ def time_synchronized():
 
 def main():
     config = InferenceConfig()
-    label_json_path = './record/coco_class_idx.json'
+    label_json_path = './cfg/categories.json'
 
     # get devices
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -364,7 +364,7 @@ if __name__ == "__main__":
     parser.add_argument('--batch-size', default=1, type=int, metavar='N',
                         help='batch size when validation.')
     # 类别索引和类别名称对应关系
-    parser.add_argument('--label-json-path', type=str, default="./record/coco_class_idx.json")
+    parser.add_argument('--label-json-path', type=str, default="./record/categories.json")
 
     args = parser.parse_args()
 
