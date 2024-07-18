@@ -23,6 +23,7 @@
 #include "ModelPredict.h"
 
 #include <fstream>
+#include <iostream>
 #if WIN32
 #include <windows.h>
 #endif
@@ -93,8 +94,24 @@ bool ModelPredict::LoadModel(char* model_path){
 
 	// print model input layer (node names, types, shape etc.)
     size_t num_input_nodes = session_->GetInputCount();
+	Ort::AllocatorWithDefaultOptions ort_alloc_in;
+	for (size_t i = 0; i < num_input_nodes; i++){
+		input_names_ptr_.push_back(session_->GetInputNameAllocated(i, ort_alloc_in));
+		input_names_.push_back(input_names_ptr_[i].get());
+		cout << "INFO: Model input name-[" << i << "] is: " 
+			<< input_names_[i] << endl;
+	}
+
 	size_t num_output_nodes = session_->GetOutputCount();
-	Ort::AllocatorWithDefaultOptions allocator;
+	Ort::AllocatorWithDefaultOptions ort_alloc_out;
+	for (size_t i = 0; i < num_output_nodes; i++){
+		output_names_ptr_.push_back(session_->GetOutputNameAllocated(i, ort_alloc_out));
+		output_names_.push_back(output_names_ptr_[i].get());
+		cout << "INFO: Model output name-[" << i << "] is: "
+			<< output_names_[i] << endl;
+	}
+
+	/*
 	for (size_t i = 0; i < num_input_nodes; i++){
 		auto input_name_Ptr = session_->GetInputName(i, allocator);
 		input_names_.push_back(input_name_Ptr);
@@ -107,6 +124,7 @@ bool ModelPredict::LoadModel(char* model_path){
 		cout << "INFO: Model output name-[" << i << "] is: "
 			<< output_names_[i] << endl;
 	}
+	*/
     
 	cout << "INFO: Succeed loading model";
 	return true;
