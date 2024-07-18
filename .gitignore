@@ -2,10 +2,20 @@
 log/
 
 # coco dataset
-coco_dataset/
+coco_dataset*/
+dataset/
+
+# predict out dirs
+out/
+
+# train runs folder
+runs/
 
 # all zip file
 *.zip
+
+# *.mp4
+*.mp4
 
 # src run file
 .idea/
@@ -15,10 +25,6 @@ models
 
 # model and coco wight file
 coco
-coco_dataset/
-
-# predict image file
-inference_results
 
 # catch file
 __pycache__/
@@ -52,6 +58,7 @@ deploy/onnx_cpp/pkg_cache/
 deploy/onnx_cpp/models/
 
 # Ori images
+deploy/onnx_cpp/images/test_imgs
 deploy/onnx_cpp/inference_results/
 
 # third_party

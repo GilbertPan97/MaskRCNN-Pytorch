@@ -61,16 +61,20 @@ using namespace cv::dnn;
 
 int main(int argc, char* argv[])
 {
-	char* model_path = "../../models/sack/patched.onnx";
-	String img_dir = "../../images/sack/";
+	char* model_path = "../models/box/patched.onnx";
+	String img_dir = "../images/test_imgs/";
 
-	string save_dir = "../../inference_results/sack";
+	string save_dir = "../inference_results/box";
 	vector<string> vec_img_paths, vec_img_names;
 	readFileNameInDir(img_dir, vec_img_paths, vec_img_names);
 
 	// construct ModelPredict object and load model
-	ModelPredict onnx_mp(true, 0);
-	onnx_mp.LoadModel(model_path);
+	ModelPredict onnx_mp(false, 0);
+	auto sta = onnx_mp.LoadModel(model_path);
+	if (sta==false){
+		std:cerr << "ERROR: Mode load fail.\n";
+		return -1;
+	}
 
 	cout << "INFO: All inference images: " << vec_img_paths.size() << endl;
 	for (size_t i = 0; i < vec_img_paths.size(); i++){

@@ -19,7 +19,7 @@ ROOT_DIR = os.path.abspath("./")
 MODELS_DIR = os.path.join(ROOT_DIR, "models")
 
 # transform pytorch model path
-WEIGHT_PATH = os.path.join(MODELS_DIR, "epoch_models", "epoch_model_35.pth")
+WEIGHT_PATH = os.path.join(MODELS_DIR, "epoch_models", "epoch_model.pth")
 
 # export onnx model dir
 ONNX_MODEL_DIR = os.path.join(MODELS_DIR, "onnx_models")

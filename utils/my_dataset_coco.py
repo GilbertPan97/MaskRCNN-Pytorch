@@ -46,7 +46,7 @@ class CocoDetection(data.Dataset):
 
         if dataset == "train":
             json_str = json.dumps(coco_classes, indent=4)
-            with open("./record/coco_class_idx.json", "w") as f:
+            with open("./record/categories.json", "w") as f:
                 f.write(json_str)
 
         self.coco_classes = coco_classes
