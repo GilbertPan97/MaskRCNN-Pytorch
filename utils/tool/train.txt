@@ -1,0 +1,88 @@
+Navicula sp.                                         : 128
+Cyclotella sp.                                       : 96
+Synedra ulna                                         : 82
+Synedra acus                                         : 60
+Achnanthes Bory                                      : 43
+Cymbella sp.                                         : 39
+Monoraphidium mirabile                               : 32
+Rhabdogloea smithii                                  : 28
+Melosira granulata                                   : 36
+Lagerheimiella genevensis Chodat                     : 23
+Nitzschia palea                                      : 29
+Dinobryon sp.                                        : 27
+Closterium sp.                                       : 27
+Gomphonema sp.                                       : 21
+Cuspidothrix issatschenkoi                           : 20
+Kirchneriella lunaris                                : 16
+Monoraphidium irregulare                             : 12
+Melosira varians                                     : 6
+Synedra amphicephala                                 : 9
+Cocconeis placentula                                 : 7
+Oscillatoria                                         : 8
+Scenedesmus quadricauda                              : 11
+Frustulia                                            : 8
+Melosira granulata var.angustissima                  : 8
+Fragilaria sp.                                       : 6
+Synedra ulna var. constracta Ostrup.                 : 7
+Nitzschia amphibia                                   : 6
+Amphora sp.                                          : 6
+Selenastrum bibraianum                               : 6
+Gomphonema pseudoclavatum Lange-Bertalot& Reichardt. : 7
+Fragilaria virescens                                 : 12
+Aphanizomenon flosaquae                              : 5
+Golenkinia radiata                                   : 4
+Gyrosigma sp.                                        : 3
+Scenedesmus bijuba                                   : 3
+Pseudanabaena mucicola                               : 5
+Eunotia Ehrenberg                                    : 5
+Euglena sp.                                          : 0
+Oscillatoria tenuis                                  : 3
+Chodatella wratislaviensis                           : 4
+Pseudanabaena limnetica                              : 3
+Nitzschia sp.                                        : 3
+Chlorella vulgaris                                   : 4
+Gomphonema parvulum                                  : 3
+Tetrastrum multisetum                                : 3
+Tetraedron muticum                                   : 3
+Tetrastrum                                           : 1
+Phacus sp.                                           : 1
+Scenedesmus spinosus                                 : 1
+Aphanizomenon                                        : 3
+Cymbella lunata W. sm.                               : 1
+Ankistrodesmus falcatus                              : 3
+Scenedesmus dimorphus                                : 3
+Ceramium sp.                                         : 1
+Tetrastrum glabrum                                   : 2
+Synedra                                              : 2
+Schroederia setigera                                 : 2
+Tetraedron pusillum                                  : 1
+Stauroneis Ehrenberg                                 : 0
+Ankistrodesmus                                       : 1
+Scenedesmus bijuga                                   : 1
+Tetrastrumelegans                                    : 1
+Raphidiopsis sinensis                                : 0
+Ankistrodesmus acicularis                            : 1
+Treubaria triappendiuulata                           : 1
+Selenastrum minutum                                  : 1
+Micractinium sp.                                     : 1
+Platrotaenium trabecula                              : 1
+Gomphonema acuminatum Ehr.var. acuminatum            : 1
+Chroococcus sp.                                      : 0
+Coccomonas orbicularis                               : 0
+Coela strum sp ericum Nageli                         : 1
+Crucigenia                                           : 0
+Crucigenia fenestrata                                : 0
+Cryptomonas                                          : 0
+Dictyosphaerium ehrenbergianum                       : 1
+Epithemia                                            : 0
+Eudorina elegans                                     : 1
+Gomphonema sphaerophorum Ehr. var. spaerophorum      : 1
+Peridinium perardiforme                              : 0
+Lagerheimiella chodatii                              : 0
+Leptolyngbya                                         : 2
+Amphora owlis                                        : 1
+Merismopedia                                         : 1
+Navicula pupula                                      : 1
+Oocystis                                             : 0
+Pediastrum simplex                                   : 0
+Westella                                             : 0
