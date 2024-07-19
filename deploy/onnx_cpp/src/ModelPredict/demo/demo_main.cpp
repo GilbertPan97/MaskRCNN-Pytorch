@@ -4,6 +4,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <cstring> // for strdup
+#include <cstdlib> // for free
 
 #include <opencv2/core.hpp>
 #include <opencv2/opencv.hpp>
@@ -61,16 +63,16 @@ using namespace cv::dnn;
 
 int main(int argc, char* argv[])
 {
-	char* model_path = "../models/box/patched.onnx";
-	String img_dir = "../images/test_imgs/";
+	String model_path = "../models/mask_rcnn_sim.onnx";
+	String img_dir = "../images/sack/";
 
-	string save_dir = "../inference_results/box";
+	string save_dir = "../inference_results/sack";
 	vector<string> vec_img_paths, vec_img_names;
 	readFileNameInDir(img_dir, vec_img_paths, vec_img_names);
 
 	// construct ModelPredict object and load model
-	ModelPredict onnx_mp(false, 0);
-	auto sta = onnx_mp.LoadModel(model_path);
+	ModelPredict onnx_mp(true, 0);
+	auto sta = onnx_mp.LoadModel(strdup(model_path.c_str()));
 	if (sta==false){
 		std:cerr << "ERROR: Mode load fail.\n";
 		return -1;

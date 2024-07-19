@@ -43,22 +43,22 @@ ModelPredict::ModelPredict(bool gpu, int device_id, int threads){
 	// if used GPU, shared lib onnxruntime_providers_cuda will be load
 	// it will auto inference on cpu if no gpu or cuda on the computer
 #if WITH_GPU == true
-	if (!gpu){
-		std::cout << "WARNING: GPU option is not selected, model are running at cpu.\n";
-	}
-	else{
-		try{
-			// Model acceleration with gpu-0
-			Ort::ThrowOnError(OrtSessionOptionsAppendExecutionProvider_CUDA(session_ops_, device_id));
-			std::cout << "INFO: Successful load cuda at GPU: " << device_id << std::endl;
-		}
-		catch (const Ort::Exception& exception) {
-			std::cerr << "WARNING: " << exception.what() << std::endl
-					  << "WARNING: Onnx Model Running on cpu instead.\n";
-			// throw std::runtime_error("ERROR: No cuda detected, run model on gpu fail.\n");
-		}
-	}	
+    if (!gpu) {
+        std::cout << "WARNING: GPU option is not selected. The model will run on the CPU.\n";
+    } else {
+        try {
+            // Attempt to accelerate model inference using GPU with CUDA
+            Ort::ThrowOnError(OrtSessionOptionsAppendExecutionProvider_CUDA(session_ops_, device_id));
+            std::cout << "INFO: Successfully enabled CUDA on GPU: " << device_id << std::endl;
+        } catch (const Ort::Exception& exception) {
+            std::cerr << "WARNING: " << exception.what() << std::endl
+                      << "WARNING: Failed to enable CUDA. The model will run on the CPU instead.\n";
+            // Uncomment the following line to throw an error if CUDA is not detected
+            // throw std::runtime_error("ERROR: No CUDA detected. Running the model on the GPU failed.\n");
+        }
+    }    
 #endif
+
 }
 
 ModelPredict::~ModelPredict(){
@@ -126,7 +126,7 @@ bool ModelPredict::LoadModel(char* model_path){
 	}
 	*/
     
-	cout << "INFO: Succeed loading model";
+	cout << "INFO: Succeed loading model." << endl;
 	return true;
 }
 
