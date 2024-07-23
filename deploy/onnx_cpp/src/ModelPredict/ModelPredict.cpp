@@ -109,23 +109,7 @@ bool ModelPredict::LoadModel(char* model_path){
 		output_names_.push_back(output_names_ptr_[i].get());
 		cout << "INFO: Model output name-[" << i << "] is: "
 			<< output_names_[i] << endl;
-	}
-
-	/*
-	for (size_t i = 0; i < num_input_nodes; i++){
-		auto input_name_Ptr = session_->GetInputName(i, allocator);
-		input_names_.push_back(input_name_Ptr);
-		cout << "INFO: Model input name-[" << i << "] is: " 
-			<< input_names_[i] << endl;
-	}
-	for (size_t i = 0; i < num_output_nodes; i++){
-		auto output_name_Ptr = session_->GetOutputName(i, allocator);
-		output_names_.push_back(output_name_Ptr);
-		cout << "INFO: Model output name-[" << i << "] is: "
-			<< output_names_[i] << endl;
-	}
-	*/
-    
+	}    
 	cout << "INFO: Succeed loading model." << endl;
 	return true;
 }
