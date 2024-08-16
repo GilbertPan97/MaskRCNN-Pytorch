@@ -198,3 +198,67 @@ def resnet50_fpn_backbone(pretrain_path="",
     # 通过fpn后得到的每个特征层的channel
     out_channels = 256
     return BackboneWithFPN(resnet_backbone, return_layers, in_channels_list, out_channels, extra_blocks=extra_blocks)
+
+
+def resnet101_fpn_backbone(pretrain_path="",
+                           norm_layer=nn.BatchNorm2d,
+                           trainable_layers=3,
+                           returned_layers=None,
+                           extra_blocks=None):
+    """
+    Create a ResNet-101 FPN backbone.
+
+    Args:
+        pretrain_path (str): Path to the pre-trained ResNet-101 weights. If not used, set to an empty string.
+        norm_layer (nn.Module): Normalization layer, default is nn.BatchNorm2d. For small GPU memory, set to FrozenBatchNorm2d.
+        trainable_layers (int): Number of layers to train, ranges from 0 to 5.
+        returned_layers (list): List of layers to return from the backbone.
+        extra_blocks (nn.Module): Extra blocks to add on top of the feature layers.
+
+    Returns:
+        BackboneWithFPN: The ResNet-101 FPN backbone with specified settings.
+    """
+    resnet_backbone = ResNet(Bottleneck, [3, 4, 23, 3],
+                             include_top=False,
+                             norm_layer=norm_layer)
+
+    if isinstance(norm_layer, FrozenBatchNorm2d):
+        overwrite_eps(resnet_backbone, 0.0)
+
+    if pretrain_path and os.path.exists(pretrain_path):
+        # Load weights from the provided path
+        print(resnet_backbone.load_state_dict(torch.load(pretrain_path), strict=False))
+    # else:
+    #     # Define the URL for the pre-trained weights if no path is provided
+    #     url = "https://download.pytorch.org/models/resnet101-fc7c26a1.pth"
+    #     print("Loading pre-trained weights from URL...")
+    #     state_dict = torch.hub.load_state_dict_from_url(url, map_location='cpu', check_hash=True)
+    #     print(resnet_backbone.load_state_dict(state_dict, strict=False))
+
+    # Select layers that won't be frozen
+    assert 0 <= trainable_layers <= 5
+    layers_to_train = ['layer4', 'layer3', 'layer2', 'layer1', 'conv1'][:trainable_layers]
+
+    # If training all layers, also include bn1
+    if trainable_layers == 5:
+        layers_to_train.append("bn1")
+
+    # Freeze layers
+    for name, parameter in resnet_backbone.named_parameters():
+        if all([not name.startswith(layer) for layer in layers_to_train]):
+            parameter.requires_grad_(False)
+
+    if extra_blocks is None:
+        extra_blocks = LastLevelMaxPool()
+
+    if returned_layers is None:
+        returned_layers = [1, 2, 3, 4]
+    assert min(returned_layers) > 0 and max(returned_layers) < 5
+
+    return_layers = {f'layer{k}': str(v) for v, k in enumerate(returned_layers)}
+
+    in_channels_stage2 = resnet_backbone.in_channel // 8  # 256
+    in_channels_list = [in_channels_stage2 * 2 ** (i - 1) for i in returned_layers]
+    out_channels = 256
+    return BackboneWithFPN(resnet_backbone, return_layers, in_channels_list, out_channels, extra_blocks=extra_blocks)
+

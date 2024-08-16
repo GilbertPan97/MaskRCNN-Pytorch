@@ -1,6 +1,6 @@
 import os
 import torch
-import onnx
+import export
 import json
 import argparse
 import numpy as np
@@ -57,12 +57,12 @@ def export_model_from_pytorch_to_onnx(pytorch_model, device, img_file, onnx_mode
 
 def verify_onnx_model(onnx_model_name, img_file, label_json_path):
     # model is an in-memory ModelProto
-    model = onnx.load(onnx_model_name)
+    model = export.load(onnx_model_name)
 
     # check the model
     try:
-        onnx.checker.check_model(model)
-    except onnx.checker.ValidationError as e:
+        export.checker.check_model(model)
+    except export.checker.ValidationError as e:
         print("  the model is invalid: %s" % e)
         exit(1)
     else:
@@ -99,17 +99,17 @@ def verify_onnx_model(onnx_model_name, img_file, label_json_path):
 
 
 def fix_onnx_model(onnx_model_path, export_path):
-    import onnx
+    import export
     import onnx_graphsurgeon as gs
 
-    gs_graph = gs.import_onnx(onnx.load(onnx_model_path))
+    gs_graph = gs.import_onnx(export.load(onnx_model_path))
     for i, node in enumerate(gs_graph.nodes):
         if "Reduce" in gs_graph.nodes[i].op and 'axes' not in node.attrs:
             # reduce all axes except batch axis
             gs_graph.nodes[i].attrs['axes'] = [i for i in range(1, len(gs_graph.nodes[i].inputs[0].shape))]
 
     new_onnx_graph = gs.export_onnx(gs_graph)
-    onnx.save(new_onnx_graph, export_path)
+    export.save(new_onnx_graph, export_path)
 
 
 def parse_arguments():
@@ -152,10 +152,10 @@ if __name__ == '__main__':
 
     # simplify export onnx model
     onnx_sim_model_path = os.path.join(args.export_folder, 'mask_rcnn_sim.onnx')
-    onnx_model = onnx.load(onnx_model_path)
+    onnx_model = export.load(onnx_model_path)
     onnx_sim_model, check = simplify(onnx_model)        # simplify onnx model
     assert check, "Simplified ONNX model could not be validated"
-    onnx.save(onnx_sim_model, onnx_sim_model_path)
+    export.save(onnx_sim_model, onnx_sim_model_path)
     print('ONNX file simplified!')
 
     # fix onnx model nodes

@@ -47,7 +47,7 @@ root/
 │
 ├── backbone/
 │   ├── feature_pyramid_network.py
-│   └── resnet50_fpn_model.py
+│   └── resnet_fpn_model.py
 │
 ├── coco_dataset/
 │   ├── annotations/

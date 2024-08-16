@@ -7,13 +7,14 @@ import torch
 import torchvision.models
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
+from torchvision.ops.misc import FrozenBatchNorm2d
+from torchvision.models.detection import MaskRCNN, maskrcnn_resnet50_fpn
+from torchvision.models.detection.backbone_utils import resnet_fpn_backbone
 
 from utils import transforms
-from network_files import MaskRCNN
-from backbone import resnet50_fpn_backbone
-from torchvision.ops.misc import FrozenBatchNorm2d
 from utils.my_dataset_coco import CocoDetection
 from utils import train_eval_utils as utils
+from network_files.resnet_fpn_model import resnet50_fpn_backbone, resnet101_fpn_backbone
 
 
 def load_config(config_file):
@@ -22,54 +23,114 @@ def load_config(config_file):
     return config
 
 
-############################################################
-# utils
-############################################################
+# def build_model(num_classes, load_pretrain_weights=True):
+#     """
+#     Create a Mask R-CNN model with a specified backbone network.
+#
+#     Parameters:
+#     - num_classes (int): Number of classes for the Mask R-CNN model.
+#     - load_pretrain_weights (bool): Whether to load pre-trained weights.
+#
+#     Returns:
+#     - model: The initialized Mask R-CNN model.
+#     """
+#
+#     # Use ResNet-50 backbone with FrozenBatchNorm2d
+#     backbone = maskrcnn_resnet50_fpn(pretrained=False)
+#
+#     model = MaskRCNN(backbone, num_classes=num_classes)
+#
+#     if load_pretrain_weights:
+#         # Pre-trained weights URL for COCO: "https://download.pytorch.org/models/maskrcnn_resnet50_fpn_coco-bf2d0c1e.pth"
+#         weights_path = "./weights/maskrcnn_resnet50_fpn_coco.pth"
+#         weights_dict = torch.load(weights_path, map_location="cpu")
+#
+#         # Remove weights for box_predictor and mask_fcn_logits if they exist
+#         for k in list(weights_dict.keys()):
+#             if ("box_predictor" in k) or ("mask_fcn_logits" in k):
+#                 del weights_dict[k]
+#
+#         print(model.load_state_dict(weights_dict, strict=True))
+#
+#     return model
 
-def create_model(num_classes, load_pretrain_weights=True):
-    # 如果GPU显存很小，batch_size不能设置很大，建议将norm_layer设置成FrozenBatchNorm2d(默认是nn.BatchNorm2d)
-    # FrozenBatchNorm2d的功能与BatchNorm2d类似，但参数无法更新
-    # trainable_layers include ['layer4', 'layer3', 'layer2', 'layer1', 'conv1']，
-    # trainable_layers=5: train all layers
-    backbone = resnet50_fpn_backbone(norm_layer=FrozenBatchNorm2d, trainable_layers=5)
-    # resnet50 imagenet weights url: https://download.pytorch.org/models/resnet50-0676ba61.pth
-    # backbone = resnet50_fpn_backbone(pretrain_path="./model/resnet50.pth", trainable_layers=3)
+def build_model(num_classes, use_resnet101=False, load_pretrain_weights=True):
+    """
+    Create a Mask R-CNN model with a specified ResNet backbone and FPN.
+
+    Parameters:
+    - num_classes (int): Number of classes for the Mask R-CNN model.
+    - use_resnet101 (bool): Whether to use ResNet-101 instead of ResNet-50.
+    - load_pretrain_weights (bool): Whether to load pre-trained weights.
+
+    Returns:
+    - model: The initialized Mask R-CNN model.
+    """
+
+    # Choose backbone
+    backbone_name = 'resnet101' if use_resnet101 else 'resnet50'
+    backbone = resnet_fpn_backbone(backbone_name, pretrained=load_pretrain_weights)
+    # The FPN backbone is only used for features, set it to eval mode to avoid issues with BatchNorm layers
+    backbone.body.eval()
+
+    # Create the Mask R-CNN model
     model = MaskRCNN(backbone, num_classes=num_classes)
 
-    if load_pretrain_weights:
-        # coco weights url: "https://download.pytorch.org/models/maskrcnn_resnet50_fpn_coco-bf2d0c1e.pth"
-        weights_dict = torch.load("./coco/maskrcnn_resnet50_fpn_coco.pth", map_location="cpu")
-        for k in list(weights_dict.keys()):
-            if ("box_predictor" in k) or ("mask_fcn_logits" in k):
-                del weights_dict[k]
-        print(model.load_state_dict(weights_dict, strict=False))
     return model
 
 
-def get_model_instance_segmentation(num_classes, load_pretrain_weights=True):
-    # get maskrcnn model form torchvision.models
-    # load an instance segmentation model pre-trained on COCO
-    model = torchvision.models.detection.maskrcnn_resnet50_fpn(pretrained=load_pretrain_weights)
+def build_custom_model(num_classes, use_resnet101=False, load_pretrain_weights=True):
+    """
+    Build a Mask R-CNN model for instance segmentation with optional ResNet-101 backbone.
 
-    # get number of input features for the classifier
+    Parameters:
+    - num_classes (int): Number of classes for the Mask R-CNN model.
+    - use_resnet101 (bool): Whether to use ResNet-101 as the backbone. If False, ResNet-50 is used.
+    - load_pretrain_weights (bool): Whether to load pre-trained weights from COCO.
+
+    Returns:
+    - model: The initialized Mask R-CNN model.
+    """
+    
+    if use_resnet101:
+        # Use ResNet-101 backbone with FPN
+        resnet_backbone = resnet101_fpn_backbone()
+    else:
+        # Use ResNet-50 backbone with FPN
+        resnet_backbone = resnet50_fpn_backbone()
+
+    # Create the Mask R-CNN model with the chosen backbone
+    model = MaskRCNN(backbone=resnet_backbone, num_classes=num_classes)
+
+    if load_pretrain_weights:
+        # Pre-trained weights URL for COCO: "https://download.pytorch.org/models/maskrcnn_resnet50_fpn_coco-bf2d0c1e.pth"
+        weights_path = "./weights/maskrcnn_resnet50_fpn_coco.pth" if not use_resnet101 else "./weights/maskrcnn_resnet101_fpn_coco.pth"
+        weights_dict = torch.load(weights_path, map_location="cpu")
+
+        # Remove weights for box_predictor and mask_fcn_logits if they exist
+        for k in list(weights_dict.keys()):
+            if ("box_predictor" in k) or ("mask_fcn_logits" in k):
+                del weights_dict[k]
+
+        print(model.load_state_dict(weights_dict, strict=False))
+    
+    # Get number of input features for the classifier
     in_features = model.roi_heads.box_predictor.cls_score.in_features
-    # replace the pre-trained head with a new one
+
+    # Replace the pre-trained head with a new one
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
 
-    # now get the number of input features for the mask classifier
+    # Get the number of input features for the mask classifier
     in_features_mask = model.roi_heads.mask_predictor.conv5_mask.in_channels
     hidden_layer = 256
-    # and replace the mask predictor with a new one
+
+    # Replace the mask predictor with a new one
     model.roi_heads.mask_predictor = MaskRCNNPredictor(in_features_mask,
                                                        hidden_layer,
                                                        num_classes)
 
     return model
 
-
-############################################################
-# main function
-############################################################
 
 def train(hyp, opt, device):
     # save train info file to det_results_file & seg_results_file
@@ -106,11 +167,15 @@ def train(hyp, opt, device):
                                                   num_workers=hyp['NUM_WORKERS'],
                                                   collate_fn=train_dataset.collate_fn)
 
-    # create model num_classes
-    model = create_model(num_classes=hyp['NUM_CLASSES'],
-                         load_pretrain_weights=True)
-    # model = get_model_instance_segmentation(num_classes=hyp['NUM_CLASSES'],
-    #                                         load_pretrain_weights=True)
+    # create model with backbone: resnet50 or resnet101
+    if opt.backbone == 'resnet101':
+        model = build_model(num_classes=hyp['NUM_CLASSES'],
+                            load_pretrain_weights=True,
+                            use_resnet101=True)
+    else:
+        model = build_model(num_classes=hyp['NUM_CLASSES'],
+                            load_pretrain_weights=True,
+                            use_resnet101=False)
     model.to(device)
 
     # define optimizer
@@ -128,17 +193,37 @@ def train(hyp, opt, device):
     learning_rate = []
     val_map = []
     scaler = torch.cuda.amp.GradScaler()
-    # if not train with coco weight，train based on BASE_WEIGHT_PATH
-    if not opt.train_with_coco:
-        # If map_location is missing, torch.load will first load the module to CPU
-        # and then copy each parameter to where it was saved,
-        # which would result in all processes on the same machine using the same set of devices.
-        checkpoint = torch.load(opt.base_weight_path, map_location=device)
-        model.load_state_dict(checkpoint['model'])
-        optimizer.load_state_dict(checkpoint['optimizer'])
-        lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
-        if "scaler" in checkpoint:
-            scaler.load_state_dict(checkpoint["scaler"])
+
+    # Check if resuming from checkpoint
+    if opt.resume:
+        # Load checkpoint from specified path
+        checkpoint = torch.load(opt.resume, map_location=device)
+
+        # Load model state
+        if 'model' in checkpoint:
+            model.load_state_dict(checkpoint['model'])
+        else:
+            raise KeyError("'model' key missing in the checkpoint.")
+        
+        # Load optimizer state
+        if 'optimizer' in checkpoint:
+            optimizer.load_state_dict(checkpoint['optimizer'])
+        else:
+            raise KeyError("'optimizer' key missing in the checkpoint.")
+        
+            # Load learning rate scheduler state
+        if 'lr_scheduler' in checkpoint:
+            lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
+        else:
+            raise KeyError("'lr_scheduler' key missing in the checkpoint.")
+
+        # Load scaler state if it exists
+        if 'scaler' in checkpoint:
+            scaler.load_state_dict(checkpoint['scaler'])
+        else:
+            print("'scaler' key missing in the checkpoint, but this is fine if mixed precision is not used.")
+    else:
+        print("Not resuming from checkpoint. Using default weights and starting fresh.")
 
     for epoch in range(0, hyp['EPOCHS']):
         # train for one epoch, printing every 50 iterations
@@ -203,16 +288,18 @@ def parse_arguments():
     
     parser.add_argument('--dataset', type=str, default='dataset', 
                         help='COCO dataset root directory containing images and annotations')
+    
     parser.add_argument('--cfg', type=str, default='cfg/train.yaml', 
                         help='Path to the YAML config file with model and training parameters')
+    
+    parser.add_argument('--backbone', type=str, choices=['resnet50', 'resnet101'], default='resnet101',
+                        help='Backbone network to use: resnet50 or resnet101')
+    
     parser.add_argument('--runs_dir', type=str, default='runs/exp/', 
                         help='Directory to save training records, logs, and checkpoints')
-    parser.add_argument('--train_with_coco', type=bool, default=True, 
-                        help='Flag to indicate whether to train with COCO pretrained weights')
-    parser.add_argument('--coco_weight_dir', type=str, default='coco', 
-                        help='Directory containing COCO pretrained weights')
-    parser.add_argument('--base_weight_path', nargs='+', default='', 
-                        help='Path(s) to base weights for training, separated by spaces if multiple')
+
+    parser.add_argument('--resume', type=str, default='', 
+                        help='Directory to resume training from a checkpoint or directory containing pretrained weights')
     
     return parser.parse_args()
 
@@ -224,7 +311,6 @@ if __name__ == "__main__":
     print("Train config is:\n", cfg)
 
     # train on the GPU or on the CPU, if a GPU is not available
-    # device = torch.device('cpu')
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     print("Using {} device training.".format(device.type))
     train(cfg, opt, device)
