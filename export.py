@@ -1,6 +1,6 @@
 import os
 import torch
-import export
+import onnx
 import json
 import argparse
 import numpy as np
@@ -8,23 +8,10 @@ import onnxruntime
 from onnxsim import simplify
 from PIL import Image
 from torchvision import transforms
-from backbone import resnet50_fpn_backbone
-from network_files import MaskRCNN
+
+from network_files.model import create_model, build_model, build_custom_model
 
 from utils.draw_box_utils import draw_objs
-
-
-############################################################
-# utils
-############################################################
-
-def create_model(num_classes, box_thresh=0.5):
-    backbone = resnet50_fpn_backbone()
-    model = MaskRCNN(backbone,
-                     num_classes=num_classes,
-                     rpn_score_thresh=box_thresh,
-                     box_score_thresh=box_thresh)
-    return model
 
 
 def export_model_from_pytorch_to_onnx(pytorch_model, device, img_file, onnx_model_name):
@@ -57,12 +44,12 @@ def export_model_from_pytorch_to_onnx(pytorch_model, device, img_file, onnx_mode
 
 def verify_onnx_model(onnx_model_name, img_file, label_json_path):
     # model is an in-memory ModelProto
-    model = export.load(onnx_model_name)
+    model = onnx.load(onnx_model_name)
 
     # check the model
     try:
-        export.checker.check_model(model)
-    except export.checker.ValidationError as e:
+        onnx.checker.check_model(model)
+    except onnx.checker.ValidationError as e:
         print("  the model is invalid: %s" % e)
         exit(1)
     else:
@@ -113,15 +100,24 @@ def fix_onnx_model(onnx_model_path, export_path):
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description="Export a PyTorch Mask R-CNN model to ONNX, simplify it, and verify its correctness using a test image.")
+    parser = argparse.ArgumentParser(description="Export a PyTorch Mask R-CNN model to ONNX, simplify it, \
+                        and verify its correctness using a test image.")
+
+    parser.add_argument('--backbone', type=str, choices=['resnet50', 'resnet101'], default='resnet101',
+                        help='Backbone network to use: resnet50 or resnet101')
+
     parser.add_argument('--weight', type=str, default="runs/exp/epoch_models/epoch_model.pth",
                         help='Transform pytorch model path')
+
     parser.add_argument('--export_folder', type=str, default="runs/exp/onnx_models",
                         help='Export ONNX model directory')
+
     parser.add_argument('--image', type=str, default="dataset/images/0211989685670_1711445097923_1711445097924_1711445098686.png",
                         help='Test model images path')
+
     parser.add_argument('--categories', type=str, default='cfg/categories.json',
                         help='Path to categories JSON file')
+
     parser.add_argument('--num_classes', type=int, default=8, help='Number of classes')
     return parser.parse_args()
 
@@ -133,13 +129,20 @@ if __name__ == '__main__':
     device = torch.device("cpu")    # export onnx model with cpu
     print("using {} device.".format(device))
 
-    # create model & load train weights
-    model = create_model(num_classes=args.num_classes)
+    # create model with backbone: resnet50 or resnet101
+    if args.backbone == 'resnet101':
+        model = build_model(num_classes=args.num_classes,
+                            load_pretrain_weights=False,
+                            use_resnet101=True)
+    else:
+        model = build_model(num_classes=args.num_classes,
+                            load_pretrain_weights=False,
+                            use_resnet101=False)
 
     assert os.path.exists(args.weight), "{} file dose not exist.".format(args.weight)
     weights_dict = torch.load(args.weight, map_location='cpu')
     weights_dict = weights_dict["model"] if "model" in weights_dict else weights_dict
-    model.load_state_dict(weights_dict)
+    model.load_state_dict(weights_dict, strict=False)
     model.to(device)
 
     # check onnx model dir
@@ -152,15 +155,15 @@ if __name__ == '__main__':
 
     # simplify export onnx model
     onnx_sim_model_path = os.path.join(args.export_folder, 'mask_rcnn_sim.onnx')
-    onnx_model = export.load(onnx_model_path)
+    onnx_model = onnx.load(onnx_model_path)
     onnx_sim_model, check = simplify(onnx_model)        # simplify onnx model
     assert check, "Simplified ONNX model could not be validated"
-    export.save(onnx_sim_model, onnx_sim_model_path)
+    onnx.save(onnx_sim_model, onnx_sim_model_path)
     print('ONNX file simplified!')
 
-    # fix onnx model nodes
-    fixed_model_path = os.path.join(args.export_folder, "patched.onnx")
-    fix_onnx_model(onnx_sim_model_path, fixed_model_path)
+    # # fix onnx model nodes
+    # fixed_model_path = os.path.join(args.export_folder, "patched.onnx")
+    # fix_onnx_model(onnx_sim_model_path, fixed_model_path)
 
     # check export onnx model
     verify_onnx_model(onnx_model_path, args.image, args.categories)    # verify onnx model
