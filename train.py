@@ -85,6 +85,7 @@ def train(hyp, opt, device):
     milestones = [int(hyp['EPOCHS'] * 1 / 3), int(hyp['EPOCHS'] * 2 / 3)]
     lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(
         optimizer, milestones=milestones, gamma=0.1)
+    print(f"\033[1;33mLearning rate will decrease by a factor of 0.1 at epochs {milestones}.\033[0m")
 
     train_loss = []
     learning_rate = []
@@ -101,14 +102,14 @@ def train(hyp, opt, device):
             model.load_state_dict(checkpoint['model'])
         else:
             raise KeyError("'model' key missing in the checkpoint.")
-        
+
         # Load optimizer state
         if 'optimizer' in checkpoint:
             optimizer.load_state_dict(checkpoint['optimizer'])
         else:
             raise KeyError("'optimizer' key missing in the checkpoint.")
-        
-            # Load learning rate scheduler state
+
+        # Load learning rate scheduler state
         if 'lr_scheduler' in checkpoint:
             lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
         else:
