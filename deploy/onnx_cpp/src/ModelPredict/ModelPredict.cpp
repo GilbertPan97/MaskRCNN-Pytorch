@@ -23,6 +23,7 @@
 #include "ModelPredict.h"
 
 #include <fstream>
+#include <iostream>
 #if WIN32
 #include <windows.h>
 #endif
@@ -61,7 +62,7 @@ ModelPredict::ModelPredict(bool gpu, int device_id, int threads){
 }
 
 ModelPredict::~ModelPredict(){
-	cout << "INFO: Destruct model";
+	std::cout << "INFO: Destruct model" << std::endl;
 	delete session_;
 }
 
@@ -93,26 +94,28 @@ bool ModelPredict::LoadModel(char* model_path){
 
 	// print model input layer (node names, types, shape etc.)
     size_t num_input_nodes = session_->GetInputCount();
-	size_t num_output_nodes = session_->GetOutputCount();
-	Ort::AllocatorWithDefaultOptions allocator;
+	Ort::AllocatorWithDefaultOptions ort_alloc_in;
 	for (size_t i = 0; i < num_input_nodes; i++){
-		auto input_name_Ptr = session_->GetInputName(i, allocator);
-		input_names_.push_back(input_name_Ptr);
+		input_names_ptr_.push_back(session_->GetInputNameAllocated(i, ort_alloc_in));
+		input_names_.push_back(input_names_ptr_[i].get());
 		cout << "INFO: Model input name-[" << i << "] is: " 
 			<< input_names_[i] << endl;
 	}
+
+	size_t num_output_nodes = session_->GetOutputCount();
+	Ort::AllocatorWithDefaultOptions ort_alloc_out;
 	for (size_t i = 0; i < num_output_nodes; i++){
-		auto output_name_Ptr = session_->GetOutputName(i, allocator);
-		output_names_.push_back(output_name_Ptr);
+		output_names_ptr_.push_back(session_->GetOutputNameAllocated(i, ort_alloc_out));
+		output_names_.push_back(output_names_ptr_[i].get());
 		cout << "INFO: Model output name-[" << i << "] is: "
 			<< output_names_[i] << endl;
 	}
     
-	cout << "INFO: Succeed loading model";
+	std::cout << "INFO: Successful load model" << std::endl;
 	return true;
 }
 
-bool ModelPredict::PredictAction(cv::Mat& inputImg, float score_thresh){ 
+bool ModelPredict::PredictAction(const cv::Mat inputImg, float score_thresh){ 
 	// clear results member
     bboxes_.clear();
 	minbboxes_.clear();
@@ -123,18 +126,26 @@ bool ModelPredict::PredictAction(cv::Mat& inputImg, float score_thresh){
     // input_dims {batch_size:1, chanel:3, height: ,width: }
 	auto input_dims = session_->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
 	auto output_dims = session_->GetOutputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
+	auto model_in_height = input_dims[2];
+	auto model_in_width = input_dims[3];
 
     // reshape input image accroding to model input size
-    if (input_dims[2] != inputImg.rows || input_dims[3] != inputImg.cols){
-		Size in_size(input_dims[3], input_dims[2]);		// width(cols), height(rows)
-		resize(inputImg, inputImg, in_size);
-	}
+	cv::Mat inferImg = inputImg.clone();
+    if (model_in_height != inputImg.rows || model_in_width != inputImg.cols){
+		Size in_size(model_in_width, model_in_height);		// width(cols), height(rows)
+		resize(inputImg, inferImg, in_size);
+
+		// register input image shape to restore model output
+		img_info_.diff_with_model = true;
+		img_info_.in_img_size = cv::Size(inputImg.cols, inputImg.rows);
+	} else
+		img_info_.diff_with_model = false;
 
 	// construct input image tensor
 	auto memory_info = Ort::MemoryInfo::CreateCpu(OrtAllocatorType::OrtArenaAllocator, OrtMemType::OrtMemTypeDefault);
 	std::vector<float> tensor_value;
 	std::vector<Ort::Value> input_tensors;
-	input_tensors.push_back(create_tensor(inputImg, input_dims, memory_info, tensor_value, "CHW"));
+	input_tensors.push_back(create_tensor(inferImg, input_dims, memory_info, tensor_value, "CHW"));
 
 	// inference run
 	double timeStart = (double)getTickCount();
@@ -176,6 +187,15 @@ bool ModelPredict::PredictAction(cv::Mat& inputImg, float score_thresh){
 		float ymin = outputData[0].first[i * 4 + 1];
 		float xmax = outputData[0].first[i * 4 + 2];
 		float ymax = outputData[0].first[i * 4 + 3];
+		if (img_info_.diff_with_model){
+				float width_ratio = static_cast<float>(img_info_.in_img_size.width) / static_cast<float>(model_in_width);
+				float height_ratio = static_cast<float>(img_info_.in_img_size.height) / static_cast<float>(model_in_height);
+			    // Adjust bounding box coordinates according to the width and height ratios
+				xmin *= width_ratio;
+				ymin *= height_ratio;
+				xmax *= width_ratio;
+				ymax *= height_ratio;
+		}
 		bboxes_.emplace_back(std::array<float, 4>{xmin, ymin, xmax, ymax});
 
 		// get classes indix
@@ -188,7 +208,14 @@ bool ModelPredict::PredictAction(cv::Mat& inputImg, float score_thresh){
 		cv::Mat curMask(mask_height, mask_width, CV_32FC1);
 		memcpy(curMask.data, outputData[3].first + i * mask_height * mask_width, 
 			mask_height * mask_width * sizeof(float));
-		masks_.emplace_back(curMask);
+		if (img_info_.diff_with_model)
+		{
+			// Resize the mask to the dimensions specified in img_info_
+			cv::Mat resizedMask;
+			cv::resize(curMask, resizedMask, img_info_.in_img_size);
+			masks_.emplace_back(resizedMask);
+		} else
+			masks_.emplace_back(curMask);
 	}
 	// filter predict results with soft NMS
 	softNMSBoxes_filter();		// this function will reshape masks_, bboxes_, ...
@@ -202,7 +229,7 @@ bool ModelPredict::PredictAction(cv::Mat& inputImg, float score_thresh){
 	return true;
 }
 
-cv::Mat ModelPredict::ShowPredictMask(cv::Mat& inputImg, float scoreThreshold){
+cv::Mat ModelPredict::RenderInference(cv::Mat& inputImg, float scoreThreshold){
     assert(bboxes_.size() == labels_.size());
 
     cv::Mat result = inputImg.clone();

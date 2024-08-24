@@ -2,7 +2,7 @@ set(LIBS_NAME ModelPredict)
 
 # opencv is necessory
 if (WIN32)
-  find_package(OpenCV REQUIRED HINTS ${THIRD_PARTY}/opencv-4.5.4 NO_DEFAULT_PATH)
+  find_package(OpenCV REQUIRED HINTS ${THIRD_PARTY}/opencv NO_DEFAULT_PATH)
 else ()
   if (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64") # x86_64 aarch64
     find_package(OpenCV REQUIRED)

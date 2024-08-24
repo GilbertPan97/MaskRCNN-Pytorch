@@ -24,6 +24,16 @@ private:
 	// model info
 	std::vector<char*> input_names_;
 	std::vector<char*> output_names_;
+	std::vector<Ort::AllocatedStringPtr> input_names_ptr_;
+	std::vector<Ort::AllocatedStringPtr> output_names_ptr_;		// avoid names pointer to be released.
+
+	// input img size
+	struct inImgInfo{
+		bool diff_with_model;
+		cv::Size in_img_size;	// width(cols), height(rows)
+	};
+
+	inImgInfo img_info_; // Declaration of the inImgInfo struct member
 
 	// inference results
 	std::vector<std::array<float, 4>> bboxes_;		// element: [x_min, y_min, x_max, y_max]
@@ -58,7 +68,7 @@ public:
 	 * only higher score results will be saved in the model prediction object.
 	 * @return (bool) True if the prediction was successful, false otherwise.
 	 */
-	bool PredictAction(cv::Mat& inputImg, float score_thresh = 0.7);
+	bool PredictAction(const cv::Mat inputImg, float score_thresh = 0.7);
 
 	/** @brief Returns an image of the predicted result plotted with masks, bounding boxes and scores
 	 * @param imputImg (cv::Mat): Original input image, should be the same as PredictAction-inputImg.
@@ -66,7 +76,7 @@ public:
 	 * the masks and bboxes above the score will be displayed on the image
 	 * @return (cv::Mat) An image of the predicted result with masks, bboxes and scores.
 	*/
-	cv::Mat ShowPredictMask(cv::Mat& inputImg, float scoreThreshold = 0.7);
+	cv::Mat RenderInference(cv::Mat& inputImg, float scoreThreshold = 0.7);
 
 	/** @brief Returns a vector of bounding box coordinates.
 	 * @return (std::vector<std::vector<cv::Point2f>>) Vector of bounding box coordinates, 

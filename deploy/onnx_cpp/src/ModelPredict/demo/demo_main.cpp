@@ -61,15 +61,15 @@ using namespace cv::dnn;
 
 int main(int argc, char* argv[])
 {
-	char* model_path = "../models/box/patched.onnx";
-	String img_dir = "../images/test_imgs/";
+	char* model_path = "../../models/box/mask_rcnn_sim.onnx";
+	String img_dir = "../../images/box/";
 
-	string save_dir = "../inference_results/box";
+	string save_dir = "../../inference_results/box";
 	vector<string> vec_img_paths, vec_img_names;
 	readFileNameInDir(img_dir, vec_img_paths, vec_img_names);
 
 	// construct ModelPredict object and load model
-	ModelPredict onnx_mp(false, 0);
+	ModelPredict onnx_mp(true, 0);
 	auto sta = onnx_mp.LoadModel(model_path);
 	if (sta==false){
 		std:cerr << "ERROR: Mode load fail.\n";
@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
 		float score_thresh = 0.6f;
 		bool status = onnx_mp.PredictAction(img, score_thresh);
 
-		cv::Mat result_img = onnx_mp.ShowPredictMask(img, score_thresh);
+		cv::Mat result_img = onnx_mp.RenderInference(img, score_thresh);
 
 		// Get minimum bounding boxes
 		std::vector<std::vector<cv::Point2f>> min_bboxes;
@@ -97,8 +97,8 @@ int main(int argc, char* argv[])
         	std::cout << element << " ";
 		std::cout << std::endl;
 
-		cv::String save_path = save_dir + "/" + vec_img_names[i];
-		imwrite(save_path, result_img);
+		// cv::String save_path = save_dir + "/" + vec_img_names[i];
+		// imwrite(save_path, result_img);
 		cv::imshow("Inference result of image-[" + std::to_string(i) + "]", result_img);
 		waitKey(0);
 	}
