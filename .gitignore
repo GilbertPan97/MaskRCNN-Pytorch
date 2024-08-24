@@ -3,12 +3,19 @@ log/
 
 # coco dataset
 coco_dataset*/
+dataset/
 
 # predict out dirs
 out/
 
+# train runs folder
+runs/
+
 # all zip file
 *.zip
+
+# *.mp4
+*.mp4
 
 # src run file
 .idea/
@@ -33,6 +40,7 @@ __pycache__/
 
 # User-specific files
 *.onnx
+*.pth
 
 # Program database (debug generate)
 *.pdb
@@ -40,7 +48,7 @@ __pycache__/
 # Build results
 deploy/onnx_cpp/[Bb]uild/
 deploy/onnx_cpp/.vscode/
-deploy/onnx_cpp/version_*/
+deploy/onnx_cpp/version_1.0/
 [Bb]uild/
 deploy/others_test/
 

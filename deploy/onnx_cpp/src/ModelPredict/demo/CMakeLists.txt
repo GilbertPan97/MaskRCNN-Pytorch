@@ -1,4 +1,3 @@
-
 set(SRC_FILES demo_main.cpp)
 
 # generate project target

@@ -47,7 +47,7 @@ root/
 │
 ├── backbone/
 │   ├── feature_pyramid_network.py
-│   └── resnet50_fpn_model.py
+│   └── resnet_fpn_model.py
 │
 ├── coco_dataset/
 │   ├── annotations/
@@ -73,7 +73,7 @@ root/
 │
 ├── validation.py
 │
-└── onnx_model_export.py
+└── onnx.py
 ```
 The `coco_dataset` directory contains the sample dataset in coco format used for training the MaskRCNN models. The `network_files` directory contains the Pytorch implementation of the MaskRCNN model. The `images` directory is used for testing trained model. The `deploy/onnx_cpp` directory is a submodule for C++ deploying the ONNX models using onnxruntime.
 

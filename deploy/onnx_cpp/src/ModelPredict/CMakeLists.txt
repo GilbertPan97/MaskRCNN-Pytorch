@@ -13,11 +13,12 @@ else ()
   endif()
 endif ()
 
-# Add ort dependence
-find_dep_path("onnxruntime" "1.12.1" ONNX_ROOT_DIR)
-message(STATUS ${ONNX_ROOT_DIR})
+find_package(Eigen3 REQUIRED)
+
+# Add onnxruntime dependence
+config_onnx_path("onnxruntime" "1.16.1" ONNX_ROOT_DIR)
+message(STATUS "OnnxRuntime root directory is: ${ONNX_ROOT_DIR}")
 find_package(ONNX REQUIRED)
-message(STATUS "Find package status is: ${ONNX_FOUND}")
 
 # config ModelPredict lib build
 set(SRC_FILES ModelPredict.cpp)
@@ -40,7 +41,9 @@ else()
   target_compile_definitions(${LIBS_NAME} PUBLIC MP_STATIC)  
 endif()
 
-target_link_libraries(${LIBS_NAME} PUBLIC ${OpenCV_LIBS} ${ONNX_LIBRARIES})
+# add_dependencies(${LIBS_NAME} OnnxRuntime)
+
+target_link_libraries(${LIBS_NAME} PUBLIC ${OpenCV_LIBS} ${ONNX_LIBRARIES} Eigen3::Eigen)
 
 target_include_directories(${LIBS_NAME} PUBLIC 
                       ${OpenCV_INCLUDE_DIRS} 

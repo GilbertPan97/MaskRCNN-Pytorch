@@ -1,16 +1,47 @@
+# function: FetchAndExtractDependency
+function(FetchAndExtractDependency DEPENDENCY_NAME DEPENDENCY_URL DEPENDENCY_PREFIX HASH_SHA256)
+    include(ExternalProject)
+    message(STATUS "Downloading and extracting ${DEPENDENCY_NAME} Setting...")
+
+    # add ExternalProject
+    ExternalProject_Add( ${DEPENDENCY_NAME}
+        PREFIX                      ${DEPENDENCY_PREFIX}
+        DOWNLOAD_EXTRACT_TIMESTAMP  TRUE
+        UPDATE_DISCONNECTED         FALSE
+        URL                         ${DEPENDENCY_URL}
+        URL_HASH                    ${HASH_SHA256}
+        DOWNLOAD_NO_PROGRESS        1
+        CONFIGURE_COMMAND           ""
+        BUILD_COMMAND               ""
+        INSTALL_COMMAND             ""
+    )
+
+    message(STATUS "Download and extraction of ${DEPENDENCY_NAME} setting completed.")
+endfunction()
+
 # Set OnnxRuntime version
 set(ONNX_VERSION 1.12.1)
 
-if(NOT ONNX_ROOT_DIR)
-    set(ONNX_ROOT_DIR ${ORT_DIR})
+if(ONNX_ROOT_DIR AND EXISTS ${ONNX_ROOT_DIR})
     message(STATUS "ONNX_ROOT_DIR is: ${ONNX_ROOT_DIR}")
+else()
+    message(STATUS "The dependency of OnnxRuntime is not exists.")
+    set(OnnxRuntime "OnnxRuntime")
+    set(DEPENDENCY_URL https://github.com/microsoft/onnxruntime/releases/download/v1.12.1/onnxruntime-win-x64-1.12.1.zip)
+    set(DEPENDENCY_PREFIX ${CMAKE_BINARY_DIR}/OnnxRuntime)
+    set(DEPENDENCY_HASH SHA256=c69650ba14aeae5903b05256a82e77164fff2de992072bc695a3838c1830b85a)
+    # call FetchAndExtractDependency
+    FetchAndExtractDependency(OnnxRuntime ${DEPENDENCY_URL} ${DEPENDENCY_PREFIX} ${DEPENDENCY_HASH})
+    set(ONNX_ROOT_DIR "${DEPENDENCY_PREFIX}/src/OnnxRuntime")
+    message(STATUS "Redirect OnnxRuntime directory to: ${ONNX_ROOT_DIR}")
 endif()
 
-# For now, check the old name ORT_INSTALL_DIR
+# Check the Onnxruntime installed dir ${ORT_INSTALL_DIR}
 if(ORT_INSTALL_DIR AND NOT ONNX_ROOT_DIR)
     set(ONNX_ROOT_DIR ${ORT_INSTALL_DIR})
 endif()
 
+# Config find_package variables
 if(ONNX_ROOT_DIR)
     find_library(ORT_LIB onnxruntime
         ${ONNX_ROOT_DIR}/lib
@@ -50,7 +81,7 @@ if(ONNX_FOUND)
                           INTERFACE_INCLUDE_DIRECTORIES ${ORT_INCLUDE}
                           IMPORTED_LOCATION ${ORT_LIBS}
                           IMPORTED_IMPLIB ${ORT_LIBS})
-    
+
     # Check whether the library exists, is available, and meets the requirements
     include(FindPackageHandleStandardArgs)
     find_package_handle_standard_args(ONNX DEFAULT_MSG
