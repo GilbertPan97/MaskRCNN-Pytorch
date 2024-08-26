@@ -2,7 +2,7 @@
  * @file ModelPredict.cpp
  * @brief ModelPredict.cpp is designed for C++ deploying onnx models. The model inference is 
  * implemented based on onnxruntime. Due to the API incompatibility between different 
- * versions of onnxruntime, currently this version only supports running on onnxruntime 1.12.1.
+ * versions of onnxruntime, currently this version supports running on onnxruntime 1.12.1~1.18.1.
  * @author Pan, Jiabin
  * @date 2023.06.26
  * @company Shanghai Fanuc Robotics Co., Ltd.
