@@ -24,6 +24,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <numeric>  // Required for std::accumulate
 #if WIN32
 #include <windows.h>
 #endif
@@ -111,7 +112,9 @@ bool ModelPredict::LoadModel(char* model_path){
 			<< output_names_[i] << endl;
 	}
     
-	std::cout << "INFO: Successful load model" << std::endl;
+	// FIXME: Warm up model function error when run inference
+	// WarmUpModel();  		// Warm up model with virtual input
+	cout << "INFO: Succeed loading model." << endl;
 	return true;
 }
 
@@ -142,10 +145,9 @@ bool ModelPredict::PredictAction(const cv::Mat inputImg, float score_thresh){
 		img_info_.diff_with_model = false;
 
 	// construct input image tensor
-	auto memory_info = Ort::MemoryInfo::CreateCpu(OrtAllocatorType::OrtArenaAllocator, OrtMemType::OrtMemTypeDefault);
 	std::vector<float> tensor_value;
 	std::vector<Ort::Value> input_tensors;
-	input_tensors.push_back(create_tensor(inferImg, input_dims, memory_info, tensor_value, "CHW"));
+	input_tensors.push_back(create_tensor(inferImg, input_dims, memory_info_, tensor_value, "CHW"));
 
 	// inference run
 	double timeStart = (double)getTickCount();
@@ -692,4 +694,47 @@ Ort::Value ModelPredict::create_tensor(const cv::Mat &mat,
 	return Ort::Value::CreateTensor<float>(memory_info_handler, tensor_value_handler.data(),
 										   target_tensor_size, tensor_dims.data(),
 										   tensor_dims.size());
+}
+
+void ModelPredict::WarmUpModel() {
+    // Check if input_names_ and output_names_ are not empty
+    if (input_names_.empty()) {
+        throw std::runtime_error("Input names are not set.");
+    }
+    if (output_names_.empty()) {
+        throw std::runtime_error("Output names are not set.");
+    }
+
+    // Prepare a vector to hold the dummy inputs
+    std::vector<Ort::Value> dummy_inputs;
+
+    // Iterate over input names to create dummy inputs
+	for (size_t i = 0; i < input_names_.size(); i++)
+	{
+		// Get the shape of the input tensor
+        auto input_info = session_->GetInputTypeInfo(i);
+        auto input_shape = input_info.GetTensorTypeAndShapeInfo().GetShape();
+        
+        // Calculate the number of elements required
+        size_t num_elements = std::accumulate(input_shape.begin(), input_shape.end(), 1, std::multiplies<int64_t>());
+        
+        // Create a dummy data vector (filled with zeros)
+        std::vector<float> dummy_data(num_elements, 0.3f);
+
+        // Create an Ort::Value for the dummy input
+        Ort::Value dummy_input = Ort::Value::CreateTensor<float>(
+            memory_info_, dummy_data.data(), dummy_data.size(), input_shape.data(), input_shape.size()
+        );
+        
+        dummy_inputs.push_back(std::move(dummy_input));
+	}
+
+    // Perform a dummy inference to warm up the model
+    std::vector<Ort::Value> dummy_outputs;
+    try {
+        dummy_outputs = session_->Run(Ort::RunOptions{nullptr}, input_names_.data(), dummy_inputs.data(), 
+                                     dummy_inputs.size(), output_names_.data(), output_names_.size());
+    } catch (const std::exception& e) {
+        throw std::runtime_error(std::string("Model warm-up failed: ") + e.what());
+    }
 }

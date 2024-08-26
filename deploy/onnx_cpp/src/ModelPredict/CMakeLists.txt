@@ -16,7 +16,7 @@ endif ()
 find_package(Eigen3 REQUIRED)
 
 # Add onnxruntime dependence
-config_onnx_path("onnxruntime" "1.16.1" ONNX_ROOT_DIR)
+config_onnx_path("onnxruntime" "1.18.1" ONNX_ROOT_DIR)
 message(STATUS "OnnxRuntime root directory is: ${ONNX_ROOT_DIR}")
 find_package(ONNX REQUIRED)
 

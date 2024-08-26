@@ -26,6 +26,8 @@ private:
 	std::vector<char*> output_names_;
 	std::vector<Ort::AllocatedStringPtr> input_names_ptr_;
 	std::vector<Ort::AllocatedStringPtr> output_names_ptr_;		// avoid names pointer to be released.
+	Ort::MemoryInfo memory_info_ = Ort::MemoryInfo::CreateCpu(OrtAllocatorType::OrtArenaAllocator, 
+															  OrtMemType::OrtMemTypeDefault);
 
 	// input img size
 	struct inImgInfo{
@@ -127,6 +129,7 @@ private:
                              const Ort::MemoryInfo &memory_info_handler,
                              std::vector<float> &tensor_value_handler,
                              std::string data_format);
+	void WarmUpModel();
 
 };
 
