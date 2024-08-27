@@ -112,8 +112,7 @@ bool ModelPredict::LoadModel(char* model_path){
 			<< output_names_[i] << endl;
 	}
     
-	// FIXME: Warm up model function error when run inference
-	// WarmUpModel();  		// Warm up model with virtual input
+	WarmUpModel();  		// Warm up model with virtual input
 	cout << "INFO: Succeed loading model." << endl;
 	return true;
 }
@@ -617,6 +616,7 @@ std::vector<cv::Scalar> ModelPredict::random_colors(int nbr, bool bright){
     return list_colors;
 }
 
+// BUG: tensor_value_handler should be std::vector<std::vector<float>> when inference batch size > 1 
 Ort::Value ModelPredict::create_tensor(const cv::Mat &mat,
                                        const std::vector<int64_t> &tensor_dims,
                                        const Ort::MemoryInfo &memory_info_handler,
@@ -696,6 +696,7 @@ Ort::Value ModelPredict::create_tensor(const cv::Mat &mat,
 										   tensor_dims.size());
 }
 
+// BUG: dummy_data should be std::vector<std::vector<float>> when inference batch size > 1 
 void ModelPredict::WarmUpModel() {
     // Check if input_names_ and output_names_ are not empty
     if (input_names_.empty()) {
@@ -709,6 +710,7 @@ void ModelPredict::WarmUpModel() {
     std::vector<Ort::Value> dummy_inputs;
 
     // Iterate over input names to create dummy inputs
+	std::vector<float> dummy_data;		// dummy_date claim shouble out of loop 
 	for (size_t i = 0; i < input_names_.size(); i++)
 	{
 		// Get the shape of the input tensor
@@ -719,13 +721,13 @@ void ModelPredict::WarmUpModel() {
         size_t num_elements = std::accumulate(input_shape.begin(), input_shape.end(), 1, std::multiplies<int64_t>());
         
         // Create a dummy data vector (filled with zeros)
-        std::vector<float> dummy_data(num_elements, 0.3f);
+        dummy_data.assign(num_elements, 0.3f);
 
         // Create an Ort::Value for the dummy input
         Ort::Value dummy_input = Ort::Value::CreateTensor<float>(
             memory_info_, dummy_data.data(), dummy_data.size(), input_shape.data(), input_shape.size()
         );
-        
+
         dummy_inputs.push_back(std::move(dummy_input));
 	}
 
