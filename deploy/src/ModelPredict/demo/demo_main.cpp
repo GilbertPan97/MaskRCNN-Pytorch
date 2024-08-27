@@ -64,10 +64,10 @@ using namespace cv::dnn;
 int main(int argc, char* argv[])
 {
 
-	String model_path = "../models/mask_rcnn_sim.onnx";
-	String img_dir = "../images/sack/";
+	String model_path = "../models/mask_rcnn.onnx";
+	String img_dir = "../images/";
 
-	string save_dir = "../inference_results/sack";
+	string save_dir = "../outs/";
 
 	vector<string> vec_img_paths, vec_img_names;
 	readFileNameInDir(img_dir, vec_img_paths, vec_img_names);

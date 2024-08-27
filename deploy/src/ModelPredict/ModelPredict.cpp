@@ -251,7 +251,7 @@ cv::Mat ModelPredict::RenderInference(cv::Mat& inputImg, float scoreThreshold){
 	
 	float maskThreshold = 0.5;
 	// -----------------------Visualize masks-----------------------//
-    for (size_t i = 0; i < bboxes_.size(); ++i) {
+    for (size_t i = 0; i < masks_.size(); ++i) {
 		cv::Scalar& curColor = colors_list_[i];
         cv::Mat curMask = masks_[i].clone();
 

@@ -47,22 +47,20 @@ __pycache__/
 *.pdb
 
 # Build results
-deploy/onnx_cpp/[Bb]uild/
-deploy/onnx_cpp/.vscode/
-deploy/onnx_cpp/version_1.0/
+deploy/[Bb]uild/
+deploy/.vscode/
+deploy/version_1.0/
 [Bb]uild/
-deploy/others_test/
 
 # pkg catch files
-deploy/onnx_cpp/pkg_cache/
+deploy/pkg_cache/
 
 # Onnx model files
-deploy/onnx_cpp/models/
+deploy/models/
 
 # Ori images
-deploy/onnx_cpp/images/test_imgs
-deploy/onnx_cpp/inference_results/
+deploy/outs/
 
 # third_party
-deploy/onnx_cpp/pkg_cache/
-deploy/onnx_cpp/third_party/
+deploy/pkg_cache/
+deploy/third_party/
