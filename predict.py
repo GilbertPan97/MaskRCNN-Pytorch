@@ -122,7 +122,7 @@ def predict(opt, device):
             plot_img = draw_objs(
                 original_img, boxes=predict_boxes, classes=predict_classes,
                 scores=predict_scores, masks=predict_masks, category_index=categorys,
-                line_thickness=2, font='arial.ttf', font_size=100)
+                box_thresh=opt.thresh, mask_thresh=opt.thresh, line_thickness=2, font='arial.ttf', font_size=100)
             plot_img.save(imgs_path)
 
 
